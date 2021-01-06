@@ -3,14 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package quanlythuvien;
+package login;
 
 /**
  *
  * @author TaiyoNg
  */
 public class LoginSession {
-    public static String Email;
-    public static String Name;
-    public static String Role;
+    public static String username;
+    public static String useremail;
+    public static String userrole;
+
+    
+    
+    
 }

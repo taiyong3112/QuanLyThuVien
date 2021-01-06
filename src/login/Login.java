@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package quanlythuvien;
+package login;
 
 import com.bkap.dao.NguoiDungDAOImp;
 import com.bkap.entities.NguoiDung;
@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import quanlythuvien.MainFrame;
 
 /**
  *
@@ -28,6 +29,19 @@ public class Login extends javax.swing.JFrame {
     /**
      * Creates new form Login
      */
+    LoginCallback loginCallback;
+    
+    interface LoginCallback{
+        public void doAction();
+    }
+
+    public Login(LoginCallback loginCallback) {
+        initComponents();
+        this.loginCallback = loginCallback;
+    }
+
+
+    
     public Login() {
         nguoiDungDAOImp = new NguoiDungDAOImp();
         initComponents();
@@ -52,6 +66,7 @@ public class Login extends javax.swing.JFrame {
         btnCancel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setName("frame1"); // NOI18N
 
         lblLoginTitle.setFont(new java.awt.Font("Times New Roman", 1, 48)); // NOI18N
         lblLoginTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -82,7 +97,7 @@ public class Login extends javax.swing.JFrame {
         pnlLogin.setLayout(pnlLoginLayout);
         pnlLoginLayout.setHorizontalGroup(
             pnlLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlLoginLayout.createSequentialGroup()
+            .addGroup(pnlLoginLayout.createSequentialGroup()
                 .addGroup(pnlLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnlLoginLayout.createSequentialGroup()
                         .addGap(263, 263, 263)
@@ -91,7 +106,7 @@ public class Login extends javax.swing.JFrame {
                             .addComponent(lblPassword))
                         .addGap(38, 38, 38)
                         .addGroup(pnlLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtEmail)
+                            .addComponent(txtEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 590, Short.MAX_VALUE)
                             .addComponent(pwdPassword)))
                     .addGroup(pnlLoginLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -99,17 +114,14 @@ public class Login extends javax.swing.JFrame {
                         .addGap(72, 72, 72)
                         .addComponent(btnLogin)))
                 .addGap(206, 206, 206))
-            .addGroup(pnlLoginLayout.createSequentialGroup()
-                .addGap(263, 263, 263)
-                .addComponent(lblLoginTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 769, Short.MAX_VALUE)
-                .addGap(168, 168, 168))
+            .addComponent(lblLoginTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         pnlLoginLayout.setVerticalGroup(
             pnlLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlLoginLayout.createSequentialGroup()
-                .addGap(103, 103, 103)
-                .addComponent(lblLoginTitle)
-                .addGap(74, 74, 74)
+                .addGap(83, 83, 83)
+                .addComponent(lblLoginTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(94, 94, 94)
                 .addGroup(pnlLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblEmail)
                     .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -121,7 +133,7 @@ public class Login extends javax.swing.JFrame {
                 .addGroup(pnlLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnLogin)
                     .addComponent(btnCancel))
-                .addContainerGap(161, Short.MAX_VALUE))
+                .addGap(161, 161, 161))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -132,7 +144,7 @@ public class Login extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(pnlLogin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(pnlLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -148,16 +160,17 @@ public class Login extends javax.swing.JFrame {
             for (NguoiDung nd : data) {
                 if (email.equals(nd.getEmail()) && password.equals(nd.getMatKhau())) {
                     JOptionPane.showMessageDialog(rootPane, "Xin chào "+nd.getTenNguoiDung(), "Chào mừng", 1);
+                    mainFrame.lblName.setText(nd.getTenNguoiDung());
+                    mainFrame.lblEmail.setText(nd.getEmail());
+                    mainFrame.lblRole.setText(nd.getRole());
                     mainFrame.setVisible(true);
-                    this.dispose();
+                    this.dispose(); 
                     break;
                 }else{
                     JOptionPane.showMessageDialog(rootPane, "Email hoặc mật khẩu không chính xác", "Lỗi đăng nhập", 0);
                 }
             }
-        }
-        
-        
+        } 
     }//GEN-LAST:event_btnLoginActionPerformed
 
     /**

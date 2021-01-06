@@ -20,6 +20,7 @@ public class NguoiDung {
     public NguoiDung() {
     }
 
+
     public NguoiDung(String id, String tenNguoiDung, String email, String matKhau, String sdt, String role) {
         this.id = id;
         this.tenNguoiDung = tenNguoiDung;
@@ -28,7 +29,7 @@ public class NguoiDung {
         this.sdt = sdt;
         this.role = role;
     }
-
+    
     public String getId() {
         return id;
     }

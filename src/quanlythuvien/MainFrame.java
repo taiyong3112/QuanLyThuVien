@@ -5,32 +5,62 @@
  */
 package quanlythuvien;
 
+import login.LoginSession;
+import login.Login;
+import com.bkap.dao.TheLoaiDAOImp;
+import com.bkap.entities.TheLoai;
 import com.bkap.util.SqlConnection;
 import java.awt.CardLayout;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.WindowConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import theloai.CategoryUpdate;
 
 /**
  *
  * @author TaiyoNg
  */
-public class MainFrame extends javax.swing.JFrame {
-
+public class MainFrame extends javax.swing.JFrame{
+    private TheLoaiDAOImp theLoaiDAOImp;
+    CategoryUpdate cu = new CategoryUpdate();
     /**
      * Creates new form MainFrame
      */
     CardLayout cl;
+    LoginSession lgs;
+    
     public MainFrame() {
+        theLoaiDAOImp = new TheLoaiDAOImp();
         initComponents();
         cl = (CardLayout) pnlInfo.getLayout();
-    }
-    public void getLabel(){
+        lblEmail.setText(LoginSession.useremail);
+        lblName.setText(LoginSession.username);
+        lblRole.setText(LoginSession.userrole);
         
+
+        displayCategory();
+    }
+    
+    public void displayCategory(){
+        List<TheLoai> data = theLoaiDAOImp.toList();
+        DefaultTableModel model = (DefaultTableModel)tblCategory.getModel();
+        model.setRowCount(0);
+        for (TheLoai tl : data) {
+            model.addRow(new Object[] {tl.getId(), tl.getTenTheLoai(), tl.isTrangThai(), tl.getNgayTao()});
+        }
+        tblCategory.setModel(model);
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -64,7 +94,17 @@ public class MainFrame extends javax.swing.JFrame {
         pnlControlPanel = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         pnlBookType = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        tpnlBookType = new javax.swing.JTabbedPane();
+        pnlCategoryList = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblCategory = new javax.swing.JTable();
+        txtCategorySearch = new javax.swing.JTextField();
+        btnCategorySearch = new javax.swing.JButton();
+        btnCategoryRefresh = new javax.swing.JButton();
+        btnCategoryUpdate = new javax.swing.JButton();
+        btnCategoryDelete = new javax.swing.JButton();
+        lblCategoryTitle = new javax.swing.JLabel();
+        pnlAddCategory = new javax.swing.JPanel();
         pnlBook = new javax.swing.JPanel();
         pnlAuthor = new javax.swing.JPanel();
         pnlPublisher = new javax.swing.JPanel();
@@ -74,6 +114,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Phần mềm quản lý thư viện");
+        setName("frame2"); // NOI18N
         getContentPane().setLayout(new java.awt.CardLayout());
 
         pnlMain.setPreferredSize(new java.awt.Dimension(1200, 630));
@@ -82,7 +123,11 @@ public class MainFrame extends javax.swing.JFrame {
 
         lblNameTitle.setText("Họ và tên:");
 
+        lblName.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+
         lblRoleTitle.setText("Role: ");
+
+        lblRole.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
 
         javax.swing.GroupLayout pnlUserInfoLayout = new javax.swing.GroupLayout(pnlUserInfo);
         pnlUserInfo.setLayout(pnlUserInfoLayout);
@@ -96,10 +141,8 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(lblRoleTitle))
                 .addGap(18, 18, 18)
                 .addGroup(pnlUserInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(pnlUserInfoLayout.createSequentialGroup()
-                        .addComponent(lblRole, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap())))
+                    .addComponent(lblName, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
+                    .addComponent(lblRole, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         pnlUserInfoLayout.setVerticalGroup(
             pnlUserInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -108,9 +151,9 @@ public class MainFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(pnlUserInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblNameTitle)
-                    .addComponent(lblName, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(pnlUserInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblNameTitle))
                 .addGap(18, 18, 18)
                 .addGroup(pnlUserInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlUserInfoLayout.createSequentialGroup()
@@ -272,27 +315,136 @@ public class MainFrame extends javax.swing.JFrame {
 
         pnlInfo.add(pnlControlPanel, "pnlControlPanel");
 
-        pnlBookType.setBackground(new java.awt.Color(255, 255, 102));
+        pnlBookType.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel1.setFont(new java.awt.Font("Times New Roman", 0, 24)); // NOI18N
-        jLabel1.setText("Thể loại sách");
+        pnlCategoryList.setFont(new java.awt.Font("Times New Roman", 0, 15)); // NOI18N
+
+        tblCategory.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Mã thể loại", "Tên thể loại", "Trạng thái", "Ngày tạo"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class, java.lang.Object.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblCategory.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblCategoryMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tblCategory);
+
+        txtCategorySearch.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
+
+        btnCategorySearch.setFont(new java.awt.Font("Times New Roman", 0, 15)); // NOI18N
+        btnCategorySearch.setText("Tìm kiếm");
+
+        btnCategoryRefresh.setFont(new java.awt.Font("Times New Roman", 0, 15)); // NOI18N
+        btnCategoryRefresh.setText("Làm mới");
+        btnCategoryRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCategoryRefreshActionPerformed(evt);
+            }
+        });
+
+        btnCategoryUpdate.setFont(new java.awt.Font("Times New Roman", 0, 15)); // NOI18N
+        btnCategoryUpdate.setText("Cập nhật");
+        btnCategoryUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCategoryUpdateActionPerformed(evt);
+            }
+        });
+
+        btnCategoryDelete.setFont(new java.awt.Font("Times New Roman", 0, 15)); // NOI18N
+        btnCategoryDelete.setText("Xóa");
+
+        lblCategoryTitle.setFont(new java.awt.Font("Times New Roman", 0, 24)); // NOI18N
+        lblCategoryTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblCategoryTitle.setText("Thể loại sách");
+
+        javax.swing.GroupLayout pnlCategoryListLayout = new javax.swing.GroupLayout(pnlCategoryList);
+        pnlCategoryList.setLayout(pnlCategoryListLayout);
+        pnlCategoryListLayout.setHorizontalGroup(
+            pnlCategoryListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addGroup(pnlCategoryListLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlCategoryListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnlCategoryListLayout.createSequentialGroup()
+                        .addComponent(btnCategoryUpdate)
+                        .addGap(41, 41, 41)
+                        .addComponent(btnCategoryDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnCategoryRefresh)
+                        .addGap(30, 30, 30))
+                    .addGroup(pnlCategoryListLayout.createSequentialGroup()
+                        .addComponent(txtCategorySearch, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnCategorySearch)
+                        .addContainerGap(450, Short.MAX_VALUE))))
+            .addComponent(lblCategoryTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        pnlCategoryListLayout.setVerticalGroup(
+            pnlCategoryListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlCategoryListLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblCategoryTitle)
+                .addGap(26, 26, 26)
+                .addGroup(pnlCategoryListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtCategorySearch, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCategorySearch, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(44, 44, 44)
+                .addGroup(pnlCategoryListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnCategoryRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCategoryUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCategoryDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(231, Short.MAX_VALUE))
+        );
+
+        tpnlBookType.addTab("Danh sách thể loại\n", pnlCategoryList);
+
+        javax.swing.GroupLayout pnlAddCategoryLayout = new javax.swing.GroupLayout(pnlAddCategory);
+        pnlAddCategory.setLayout(pnlAddCategoryLayout);
+        pnlAddCategoryLayout.setHorizontalGroup(
+            pnlAddCategoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 935, Short.MAX_VALUE)
+        );
+        pnlAddCategoryLayout.setVerticalGroup(
+            pnlAddCategoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 600, Short.MAX_VALUE)
+        );
+
+        tpnlBookType.addTab("Thêm thể loại sách", pnlAddCategory);
 
         javax.swing.GroupLayout pnlBookTypeLayout = new javax.swing.GroupLayout(pnlBookType);
         pnlBookType.setLayout(pnlBookTypeLayout);
         pnlBookTypeLayout.setHorizontalGroup(
             pnlBookTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlBookTypeLayout.createSequentialGroup()
-                .addGap(401, 401, 401)
-                .addComponent(jLabel1)
-                .addContainerGap(412, Short.MAX_VALUE))
+            .addComponent(tpnlBookType)
         );
         pnlBookTypeLayout.setVerticalGroup(
             pnlBookTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlBookTypeLayout.createSequentialGroup()
-                .addGap(118, 118, 118)
-                .addComponent(jLabel1)
-                .addContainerGap(506, Short.MAX_VALUE))
+            .addComponent(tpnlBookType)
         );
+
+        tpnlBookType.getAccessibleContext().setAccessibleName("Danh sách thể loại");
 
         pnlInfo.add(pnlBookType, "pnlBookType");
 
@@ -446,6 +598,32 @@ public class MainFrame extends javax.swing.JFrame {
         cl.show(pnlInfo, "pnlReport");
     }//GEN-LAST:event_btnReportActionPerformed
 
+    private void btnCategoryRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCategoryRefreshActionPerformed
+        // TODO add your handling code here:
+        displayCategory();
+    }//GEN-LAST:event_btnCategoryRefreshActionPerformed
+
+    private void tblCategoryMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCategoryMouseClicked
+        // TODO add your handling code here:
+        int index = tblCategory.getSelectedRow();
+        TableModel model = tblCategory.getModel();
+        String id = model.getValueAt(index, 0).toString();
+        String categoryName = model.getValueAt(index, 1).toString();
+        Boolean categoryStatus = (Boolean) model.getValueAt(index, 2);
+        
+        cu.pack();
+        cu.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        
+        cu.txtCategoryId.setText(id);
+        cu.txtCategoryName.setText(categoryName);
+        cu.chbCategoryStatus.setSelected(categoryStatus); 
+    }//GEN-LAST:event_tblCategoryMouseClicked
+
+    private void btnCategoryUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCategoryUpdateActionPerformed
+        // TODO add your handling code here:
+        cu.setVisible(true);
+    }//GEN-LAST:event_btnCategoryUpdateActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -485,23 +663,30 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton btnAuthor;
     private javax.swing.JButton btnBook;
     private javax.swing.JButton btnBookType;
+    private javax.swing.JButton btnCategoryDelete;
+    private javax.swing.JButton btnCategoryRefresh;
+    private javax.swing.JButton btnCategorySearch;
+    private javax.swing.JButton btnCategoryUpdate;
     private javax.swing.JButton btnControlPanel;
     private javax.swing.JButton btnLogout;
     private javax.swing.JButton btnPublisher;
     private javax.swing.JButton btnReader;
     private javax.swing.JButton btnRent;
     private javax.swing.JButton btnReport;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel lblEmail;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblCategoryTitle;
+    public javax.swing.JLabel lblEmail;
     private javax.swing.JLabel lblEmailTitle;
-    private javax.swing.JLabel lblName;
+    public javax.swing.JLabel lblName;
     private javax.swing.JLabel lblNameTitle;
-    private javax.swing.JLabel lblRole;
+    public javax.swing.JLabel lblRole;
     private javax.swing.JLabel lblRoleTitle;
+    private javax.swing.JPanel pnlAddCategory;
     private javax.swing.JPanel pnlAuthor;
     private javax.swing.JPanel pnlBook;
     private javax.swing.JPanel pnlBookType;
+    private javax.swing.JPanel pnlCategoryList;
     private javax.swing.JPanel pnlControlPanel;
     private javax.swing.JPanel pnlInfo;
     private javax.swing.JPanel pnlListMenu;
@@ -512,5 +697,10 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel pnlRent;
     private javax.swing.JPanel pnlReport;
     private javax.swing.JPanel pnlUserInfo;
+    private javax.swing.JTable tblCategory;
+    private javax.swing.JTabbedPane tpnlBookType;
+    private javax.swing.JTextField txtCategorySearch;
     // End of variables declaration//GEN-END:variables
+
+
 }
