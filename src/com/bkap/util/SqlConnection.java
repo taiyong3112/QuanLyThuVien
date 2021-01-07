@@ -46,7 +46,7 @@ public class SqlConnection {
         return null;
     }
     
-    public static int executeUpdate(String sql, Object... params){
+     public static int executeUpdate(String sql, Object ... params){
         Connection conn = getConnect();
         try {
             CallableStatement cs = conn.prepareCall(sql);
@@ -60,7 +60,7 @@ public class SqlConnection {
             Logger.getLogger(SqlConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
         return 0;
-    }
+    } 
 }
 
 

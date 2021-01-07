@@ -5,16 +5,21 @@
  */
 package theloai;
 
+import com.bkap.dao.TheLoaiDAOImp;
+import com.bkap.entities.TheLoai;
+import quanlythuvien.MainFrame;
+
 /**
  *
  * @author TaiyoNg
  */
 public class CategoryUpdate extends javax.swing.JFrame {
-
+    TheLoaiDAOImp theLoaiDAOImp;
     /**
      * Creates new form CategoryUpdate
      */
     public CategoryUpdate() {
+        theLoaiDAOImp = new TheLoaiDAOImp();
         initComponents();
     }
 
@@ -35,9 +40,9 @@ public class CategoryUpdate extends javax.swing.JFrame {
         txtCategoryName = new javax.swing.JTextField();
         chbCategoryStatus = new javax.swing.JCheckBox();
         btnCancel = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnCategoryUpdate = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -67,8 +72,13 @@ public class CategoryUpdate extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        jButton2.setText("Cập nhật");
+        btnCategoryUpdate.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        btnCategoryUpdate.setText("Cập nhật");
+        btnCategoryUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCategoryUpdateActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -93,7 +103,7 @@ public class CategoryUpdate extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
-                                .addComponent(jButton2)))
+                                .addComponent(btnCategoryUpdate)))
                         .addGap(57, 57, 57))))
         );
         layout.setVerticalGroup(
@@ -115,7 +125,7 @@ public class CategoryUpdate extends javax.swing.JFrame {
                     .addComponent(chbCategoryStatus))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 76, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
+                    .addComponent(btnCategoryUpdate)
                     .addComponent(btnCancel))
                 .addGap(65, 65, 65))
         );
@@ -127,6 +137,16 @@ public class CategoryUpdate extends javax.swing.JFrame {
         // TODO add your handling code here:
         dispose();
     }//GEN-LAST:event_btnCancelActionPerformed
+
+    private void btnCategoryUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCategoryUpdateActionPerformed
+        // TODO add your handling code here:
+        TheLoai tl = new TheLoai();
+        tl.setId(txtCategoryId.getText());
+        tl.setTenTheLoai(txtCategoryName.getText());
+        tl.setTrangThai(chbCategoryStatus.isSelected());
+        theLoaiDAOImp.edit(tl);
+        dispose();
+    }//GEN-LAST:event_btnCategoryUpdateActionPerformed
 
     /**
      * @param args the command line arguments
@@ -165,8 +185,8 @@ public class CategoryUpdate extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
+    private javax.swing.JButton btnCategoryUpdate;
     public javax.swing.JCheckBox chbCategoryStatus;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

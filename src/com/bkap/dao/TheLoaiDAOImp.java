@@ -59,7 +59,7 @@ public class TheLoaiDAOImp implements ITheLoaiDAO{
 
     @Override
     public void add(TheLoai tl) {
-        SqlConnection.executeUpdate("INSERT INTO TheLoai(?,?,?)", tl.getId(), tl.getTenTheLoai(), tl.isTrangThai());
+        SqlConnection.executeUpdate("INSERT INTO TheLoai VALUES(?,?,?)", tl.getId(), tl.getTenTheLoai(), tl.isTrangThai());
     }
 
     @Override
