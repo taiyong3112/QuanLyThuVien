@@ -19,6 +19,7 @@ import javax.swing.table.TableModel;
  */
 public class SachIF extends javax.swing.JInternalFrame {
     SachDAOImp sachDAOImp;
+    SachUpdate su = new SachUpdate();
     /**
      * Creates new form SachIF
      */
@@ -53,7 +54,7 @@ public class SachIF extends javax.swing.JInternalFrame {
         jButton1 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblBook = new javax.swing.JTable();
-        jButton2 = new javax.swing.JButton();
+        btnUpdateBook = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         btnBookRefresh = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
@@ -108,8 +109,13 @@ public class SachIF extends javax.swing.JInternalFrame {
         });
         jScrollPane1.setViewportView(tblBook);
 
-        jButton2.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        jButton2.setText("Cập Nhật");
+        btnUpdateBook.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        btnUpdateBook.setText("Cập Nhật");
+        btnUpdateBook.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateBookActionPerformed(evt);
+            }
+        });
 
         jButton3.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         jButton3.setText("Xóa");
@@ -130,7 +136,7 @@ public class SachIF extends javax.swing.JInternalFrame {
                 .addGap(33, 33, 33)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton2)
+                        .addComponent(btnUpdateBook)
                         .addGap(40, 40, 40)
                         .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -159,7 +165,7 @@ public class SachIF extends javax.swing.JInternalFrame {
                         .addComponent(btnBookRefresh)
                         .addGap(42, 42, 42)))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
+                    .addComponent(btnUpdateBook)
                     .addComponent(jButton3))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -201,13 +207,54 @@ public class SachIF extends javax.swing.JInternalFrame {
         TableModel model = tblBook.getModel();
         String id = model.getValueAt(selectedRow, 0).toString();
         String tenSach = model.getValueAt(selectedRow, 1).toString();
+        String tacGia = model.getValueAt(selectedRow, 2).toString();
+        String nxb = model.getValueAt(selectedRow, 3).toString();
+        String theLoai = model.getValueAt(selectedRow, 4).toString();
+        String viTri = model.getValueAt(selectedRow, 5).toString();
+        Boolean trangThai = (Boolean) model.getValueAt(selectedRow, 6);
+        
+        su.txtUpdateBookID.setText(id);
+        su.txtUpdateBookName.setText(tenSach);
+        su.chbUpdateBookStatus.setSelected(trangThai);
+        for (int i = 0; i < su.cboUpdateBookAuthor.getItemCount(); i++) {
+            if (su.cboUpdateBookAuthor.getItemAt(i).toString().equalsIgnoreCase(tacGia)) {
+                su.cboUpdateBookAuthor.setSelectedIndex(i);
+            }
+        }
+        for (int i = 0; i < su.cboUpdateBookCategory.getItemCount(); i++) {
+            if (su.cboUpdateBookCategory.getItemAt(i).toString().equalsIgnoreCase(theLoai)) {
+                su.cboUpdateBookCategory.setSelectedIndex(i);
+            }
+        }
+        for (int i = 0; i < su.cboUpdateBookPublisher.getItemCount(); i++) {
+            if (su.cboUpdateBookPublisher.getItemAt(i).toString().equalsIgnoreCase(nxb)) {
+                su.cboUpdateBookPublisher.setSelectedIndex(i);
+            }
+        }
+        for (int i = 0; i < su.cboUpdateBookLocation.getItemCount(); i++) {
+            if (su.cboUpdateBookLocation.getItemAt(i).toString().equalsIgnoreCase(viTri)) {
+                su.cboUpdateBookLocation.setSelectedIndex(i);
+            }
+        }
+        
+        
+        Sach sa = sachDAOImp.find(id);
+        su.txtUpdateBookPublishYear.setText(String.valueOf(sa.getNamXuatBan()));
+        su.txtUpdateBookPage.setText(String.valueOf(sa.getSoTrang()));
+        su.txtUpdateBookNumber.setText(String.valueOf(sa.getSoLuong()));
+        su.txtUpdateBookRentPrice.setText(String.valueOf(sa.getGiaMuon()));
     }//GEN-LAST:event_tblBookMouseClicked
+
+    private void btnUpdateBookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateBookActionPerformed
+        // TODO add your handling code here:
+        su.setVisible(true);
+    }//GEN-LAST:event_btnUpdateBookActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBookRefresh;
+    private javax.swing.JButton btnUpdateBook;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;

@@ -79,6 +79,11 @@ public class TacGia {
         this.ngayTao = ngayTao;
     }
 
+    @Override
+    public String toString() {
+        return this.butDanh;
+    }
+
     
     
     

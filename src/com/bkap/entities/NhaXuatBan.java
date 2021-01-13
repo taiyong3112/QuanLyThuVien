@@ -11,22 +11,20 @@ import java.sql.Date;
  *
  * @author TaiyoNg
  */
-public class TheLoai {
+public class NhaXuatBan {
     private String id;
-    private String tenTheLoai;
-    private boolean trangThai;
+    private String tenNXB;
     private Date ngayTao;
 
-    public TheLoai() {
+    public NhaXuatBan() {
     }
 
-    public TheLoai(String id, String tenTheLoai, boolean trangThai, Date ngayTao) {
+    public NhaXuatBan(String id, String tenNXB, Date ngayTao) {
         this.id = id;
-        this.tenTheLoai = tenTheLoai;
-        this.trangThai = trangThai;
+        this.tenNXB = tenNXB;
         this.ngayTao = ngayTao;
     }
-    
+
     public String getId() {
         return id;
     }
@@ -35,20 +33,12 @@ public class TheLoai {
         this.id = id;
     }
 
-    public String getTenTheLoai() {
-        return tenTheLoai;
+    public String getTenNXB() {
+        return tenNXB;
     }
 
-    public void setTenTheLoai(String tenTheLoai) {
-        this.tenTheLoai = tenTheLoai;
-    }
-
-    public boolean isTrangThai() {
-        return trangThai;
-    }
-
-    public void setTrangThai(boolean trangThai) {
-        this.trangThai = trangThai;
+    public void setTenNXB(String tenNXB) {
+        this.tenNXB = tenNXB;
     }
 
     public Date getNgayTao() {
@@ -61,9 +51,8 @@ public class TheLoai {
 
     @Override
     public String toString() {
-        return this.tenTheLoai;
+        return this.tenNXB;
     }
-    
     
     
 }
