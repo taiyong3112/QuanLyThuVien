@@ -19,7 +19,32 @@ import java.util.logging.Logger;
  * @author TaiyoNg
  */
 public class SachDAOImp implements ISachDAO{
-
+    
+    public ArrayList<Sach> findByName(String tenSach){
+        ArrayList<Sach> data = new ArrayList<>();
+        ResultSet rs = SqlConnection.execute("SELECT * FROM Sach WHERE tenSach LIKE N'%?%'", tenSach);
+        try {
+            while(rs.next()){
+                Sach sa = new Sach();
+                sa.setId(rs.getString("id"));
+                sa.setIdTheLoai(rs.getString("idTheLoai"));
+                sa.setIdTacGia(rs.getString("idTacGia"));
+                sa.setIdNXB(rs.getString("idNXB"));
+                sa.setIdViTri(rs.getString("idViTri"));
+                sa.setTenSach(rs.getString("tenSach"));
+                sa.setNamXuatBan(rs.getInt("namXuatBan"));
+                sa.setSoTrang(rs.getInt("soTrang"));
+                sa.setGiaMuon(rs.getFloat("giaMuon"));
+                sa.setSoLuong(rs.getInt("soLuong"));
+                sa.setTrangThai(rs.getBoolean("trangThai"));
+                sa.setNgayTao(rs.getDate("ngayTao"));
+                data.add(sa);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(SachDAOImp.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return data;
+    }
     @Override
     public List<Sach> toList() {
         List<Sach> data = new ArrayList<>();

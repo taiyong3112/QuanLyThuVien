@@ -24,12 +24,12 @@ import javax.swing.JOptionPane;
  */
 public class SachUpdate extends javax.swing.JFrame {
     SachDAOImp sachDAOImp;
-    SachIF sIF;
+
     /**
      * Creates new form SachUpdate
      */
     public SachUpdate() {
-        sIF = new SachIF();
+
         sachDAOImp = new SachDAOImp();
         initComponents();
         loadCbo();
@@ -294,19 +294,22 @@ public class SachUpdate extends javax.swing.JFrame {
     private void btnConfirmUpdateBookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmUpdateBookActionPerformed
         // TODO add your handling code here:
         Sach sa = new Sach();
+        sa.setId(txtUpdateBookID.getText());
         sa.setTenSach(txtUpdateBookName.getText());
         sa.setNamXuatBan(Integer.parseInt(txtUpdateBookPublishYear.getText()));
         sa.setSoTrang(Integer.parseInt(txtUpdateBookPage.getText()));
         sa.setGiaMuon(Float.parseFloat(txtUpdateBookRentPrice.getText()));
         sa.setSoLuong(Integer.parseInt(txtUpdateBookNumber.getText()));
         sa.setTrangThai(chbUpdateBookStatus.isSelected());
-        sa.setIdTheLoai((String)cboUpdateBookCategory.getSelectedItem());
-        sa.setIdTacGia((String)cboUpdateBookAuthor.getSelectedItem());
-        sa.setIdNXB((String)cboUpdateBookPublisher.getSelectedItem());
-        sa.setIdViTri((String)cboUpdateBookLocation.getSelectedItem());
+        sa.setIdTheLoai(((TheLoai)cboUpdateBookCategory.getSelectedItem()).getId());
+        sa.setIdTacGia(((TacGia)cboUpdateBookAuthor.getSelectedItem()).getId());
+        sa.setIdNXB(((NhaXuatBan)cboUpdateBookPublisher.getSelectedItem()).getId());
+        sa.setIdViTri(((ViTri)cboUpdateBookLocation.getSelectedItem()).getId());
+        sachDAOImp.edit(sa);
         JOptionPane.showMessageDialog(rootPane, "Cập nhật thông tin sách thành công", "Thông báo", 1);
         
-        sIF.displayBook();
+        SachIF saif = new SachIF();
+        saif.displayBook();
         
         dispose();
     }//GEN-LAST:event_btnConfirmUpdateBookActionPerformed

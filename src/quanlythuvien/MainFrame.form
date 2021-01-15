@@ -4,7 +4,6 @@
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
     <Property name="title" type="java.lang.String" value="Ph&#x1ea7;n m&#x1ec1;m qu&#x1ea3;n l&#xfd; th&#x1b0; vi&#x1ec7;n"/>
-    <Property name="name" type="java.lang.String" value="frame2" noResource="true"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
@@ -87,7 +86,7 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="lblEmail" max="32767" attributes="0"/>
+                      <Component id="lblID" max="32767" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="lblNameTitle" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -107,7 +106,7 @@
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="lblEmailTitle" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="lblEmail" min="-2" pref="21" max="-2" attributes="0"/>
+                          <Component id="lblID" min="-2" pref="21" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="lblName" alignment="1" min="-2" pref="16" max="-2" attributes="0"/>
@@ -129,10 +128,10 @@
               <SubComponents>
                 <Component class="javax.swing.JLabel" name="lblEmailTitle">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Email:"/>
+                    <Property name="text" type="java.lang.String" value="ID:"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JLabel" name="lblEmail">
+                <Component class="javax.swing.JLabel" name="lblID">
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
                   </AuxValues>

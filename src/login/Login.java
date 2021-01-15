@@ -161,7 +161,7 @@ public class Login extends javax.swing.JFrame {
                 if (email.equals(nd.getEmail()) && password.equals(nd.getMatKhau())) {
                     JOptionPane.showMessageDialog(rootPane, "Xin chào "+nd.getTenNguoiDung(), "Chào mừng", 1);
                     mainFrame.lblName.setText(nd.getTenNguoiDung());
-                    mainFrame.lblEmail.setText(nd.getEmail());
+                    mainFrame.lblID.setText(nd.getId());
                     mainFrame.lblRole.setText(nd.getRole());
                     mainFrame.setVisible(true);
                     this.dispose(); 

@@ -10,6 +10,7 @@ import login.Login;
 import com.bkap.dao.TheLoaiDAOImp;
 import com.bkap.entities.TheLoai;
 import com.bkap.util.SqlConnection;
+import docgia.DocGiaIF;
 import java.awt.CardLayout;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,6 +27,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import phieumuon.PhieuMuonIF;
 import sach.SachIF;
 import tacgia.TacGiaIF;
 import theloai.CategoryUpdate;
@@ -64,7 +66,7 @@ public class MainFrame extends javax.swing.JFrame{
         pnlMenu = new javax.swing.JPanel();
         pnlUserInfo = new javax.swing.JPanel();
         lblEmailTitle = new javax.swing.JLabel();
-        lblEmail = new javax.swing.JLabel();
+        lblID = new javax.swing.JLabel();
         lblNameTitle = new javax.swing.JLabel();
         lblName = new javax.swing.JLabel();
         lblRoleTitle = new javax.swing.JLabel();
@@ -84,14 +86,13 @@ public class MainFrame extends javax.swing.JFrame{
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Phần mềm quản lý thư viện");
-        setName("frame2"); // NOI18N
         getContentPane().setLayout(new java.awt.CardLayout());
 
         pnlMain.setPreferredSize(new java.awt.Dimension(1200, 630));
 
         pnlMenu.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
-        lblEmailTitle.setText("Email:");
+        lblEmailTitle.setText("ID:");
 
         lblNameTitle.setText("Họ và tên:");
 
@@ -105,7 +106,7 @@ public class MainFrame extends javax.swing.JFrame{
         pnlUserInfo.setLayout(pnlUserInfoLayout);
         pnlUserInfoLayout.setHorizontalGroup(
             pnlUserInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(lblEmail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(lblID, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(pnlUserInfoLayout.createSequentialGroup()
                 .addGroup(pnlUserInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblNameTitle)
@@ -121,7 +122,7 @@ public class MainFrame extends javax.swing.JFrame{
             .addGroup(pnlUserInfoLayout.createSequentialGroup()
                 .addComponent(lblEmailTitle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblID, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(pnlUserInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -345,12 +346,16 @@ public class MainFrame extends javax.swing.JFrame{
 
     private void btnReaderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReaderActionPerformed
         // TODO add your handling code here:
-        
+        DocGiaIF dgIF = new DocGiaIF();
+        jDesktopPane1.add(dgIF);
+        dgIF.setVisible(true);
     }//GEN-LAST:event_btnReaderActionPerformed
 
     private void btnRentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRentActionPerformed
         // TODO add your handling code here:
-       
+       PhieuMuonIF pmIF = new PhieuMuonIF();
+       jDesktopPane1.add(pmIF);
+       pmIF.setVisible(true);
     }//GEN-LAST:event_btnRentActionPerformed
 
     private void btnReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportActionPerformed
@@ -410,8 +415,8 @@ public class MainFrame extends javax.swing.JFrame{
     private javax.swing.JButton btnRent;
     private javax.swing.JButton btnReport;
     private javax.swing.JDesktopPane jDesktopPane1;
-    public javax.swing.JLabel lblEmail;
     private javax.swing.JLabel lblEmailTitle;
+    public javax.swing.JLabel lblID;
     public javax.swing.JLabel lblName;
     private javax.swing.JLabel lblNameTitle;
     public javax.swing.JLabel lblRole;
