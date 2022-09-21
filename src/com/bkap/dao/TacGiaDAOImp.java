@@ -31,7 +31,7 @@ public class TacGiaDAOImp implements ITacGiaDAO{
                 tg.setButDanh(rs.getString("butDanh"));
                 tg.setTenThat(rs.getString("tenThat"));
                 tg.setNamSinh(rs.getInt("namSinh"));
-                tg.setGioiTinh(rs.getString("gioiTinh"));
+                tg.setGioiTinh(rs.getBoolean("gioiTinh"));
                 tg.setNgayTao(rs.getDate("ngayTao"));
                 data.add(tg);
             }
@@ -51,7 +51,7 @@ public class TacGiaDAOImp implements ITacGiaDAO{
                 tg.setButDanh(rs.getString("butDanh"));
                 tg.setTenThat(rs.getString("tenThat"));
                 tg.setNamSinh(rs.getInt("namSinh"));
-                tg.setGioiTinh(rs.getString("gioiTinh"));
+                tg.setGioiTinh(rs.getBoolean("gioiTinh"));
                 tg.setNgayTao(rs.getDate("ngayTao"));
                 return tg;
             }
@@ -63,12 +63,12 @@ public class TacGiaDAOImp implements ITacGiaDAO{
 
     @Override
     public void add(TacGia tg) {
-        SqlConnection.executeUpdate("INSERT INTO TacGia VALUES (?,?,?,?,?,?)", tg.getId(), tg.getButDanh(), tg.getTenThat(), tg.getNamSinh(), tg.getGioiTinh(), tg.getNgayTao());
+        SqlConnection.executeUpdate("INSERT INTO TacGia VALUES (?,?,?,?,?,?)", tg.getId(), tg.getButDanh(), tg.getTenThat(), tg.isGioiTinh(), tg.getNamSinh(), tg.getNgayTao());
     }
 
     @Override
     public void edit(TacGia tg) {
-        SqlConnection.executeUpdate("UPDATE TacGia SET butDanh = ?, tenThat = ?, namSinh = ?, gioiTinh = ? WHERE id = ?", tg.getButDanh(), tg.getTenThat(), tg.getNamSinh(), tg.getGioiTinh(), tg.getId());
+        SqlConnection.executeUpdate("UPDATE TacGia SET butDanh = ?, tenThat = ?, gioiTinh = ?, namSinh = ? WHERE id = ?", tg.getButDanh(), tg.getTenThat(), tg.isGioiTinh(), tg.getNamSinh(), tg.getId());
     }
 
     @Override

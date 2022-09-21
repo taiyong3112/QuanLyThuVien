@@ -24,14 +24,16 @@ import quanlythuvien.MainFrame;
  * @author TaiyoNg
  */
 public class Login extends javax.swing.JFrame {
+
     MainFrame mainFrame = new MainFrame();
     private NguoiDungDAOImp nguoiDungDAOImp;
     /**
      * Creates new form Login
      */
     LoginCallback loginCallback;
-    
-    interface LoginCallback{
+
+    interface LoginCallback {
+
         public void doAction();
     }
 
@@ -40,13 +42,11 @@ public class Login extends javax.swing.JFrame {
         this.loginCallback = loginCallback;
     }
 
-
-    
     public Login() {
         nguoiDungDAOImp = new NguoiDungDAOImp();
         initComponents();
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -106,7 +106,7 @@ public class Login extends javax.swing.JFrame {
                             .addComponent(lblPassword))
                         .addGap(38, 38, 38)
                         .addGroup(pnlLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 590, Short.MAX_VALUE)
+                            .addComponent(txtEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE)
                             .addComponent(pwdPassword)))
                     .addGroup(pnlLoginLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -124,16 +124,16 @@ public class Login extends javax.swing.JFrame {
                 .addGap(94, 94, 94)
                 .addGroup(pnlLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblEmail)
-                    .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(71, 71, 71)
                 .addGroup(pnlLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblPassword)
-                    .addComponent(pwdPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(pwdPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(72, 72, 72)
                 .addGroup(pnlLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnLogin)
                     .addComponent(btnCancel))
-                .addGap(161, 161, 161))
+                .addContainerGap(98, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -156,21 +156,24 @@ public class Login extends javax.swing.JFrame {
         String password = String.valueOf(pwdPassword.getPassword());
         if (email.equals("") || password.equals("")) {
             JOptionPane.showMessageDialog(rootPane, "Email hoặc mật khẩu không được để trống", "Lỗi đăng nhập", 0);
-        }else{
-            for (NguoiDung nd : data) {
-                if (email.equals(nd.getEmail()) && password.equals(nd.getMatKhau())) {
-                    JOptionPane.showMessageDialog(rootPane, "Xin chào "+nd.getTenNguoiDung(), "Chào mừng", 1);
-                    mainFrame.lblName.setText(nd.getTenNguoiDung());
-                    mainFrame.lblID.setText(nd.getId());
-                    mainFrame.lblRole.setText(nd.getRole());
-                    mainFrame.setVisible(true);
-                    this.dispose(); 
-                    break;
-                }else{
-                    JOptionPane.showMessageDialog(rootPane, "Email hoặc mật khẩu không chính xác", "Lỗi đăng nhập", 0);
+        } else {
+            NguoiDung nd = nguoiDungDAOImp.findByEmail(email);
+            if (email.equals(nd.getEmail()) && password.equals(nd.getMatKhau())) {
+                JOptionPane.showMessageDialog(rootPane, "Xin chào " + nd.getTenNguoiDung(), "Chào mừng", 1);
+                mainFrame.lblName.setText(nd.getTenNguoiDung());
+                mainFrame.lblID.setText(nd.getId());
+                mainFrame.lblRole.setText(nd.getRole());
+                if (nd.getRole().equals("Admin")) {
+                    mainFrame.btnUser.setVisible(true);
+                } else {
+                    mainFrame.btnUser.setVisible(false);
                 }
+                mainFrame.setVisible(true);
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(rootPane, "Email hoặc mật khẩu không chính xác", "Lỗi đăng nhập", 0);
             }
-        } 
+        }
     }//GEN-LAST:event_btnLoginActionPerformed
 
     /**

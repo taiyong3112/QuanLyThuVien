@@ -5,28 +5,41 @@
  */
 package tacgia;
 
+import com.bkap.dao.SachDAOImp;
 import com.bkap.dao.TacGiaDAOImp;
+import com.bkap.entities.Sach;
 import com.bkap.entities.TacGia;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
  * @author TaiyoNg
  */
-public class TacGiaIF extends javax.swing.JInternalFrame {
+public class TacGiaIF extends javax.swing.JInternalFrame implements TacGiaUpdate.CallbackTacGiaUpdate{
     TacGiaDAOImp tacGiaDAOImp;
+    SachDAOImp sachDAOImp;
     Date date = new Date();
+    TacGiaUpdate tu = new TacGiaUpdate(this);
+    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
     /**
      * Creates new form TacGiaIF
      */
     public TacGiaIF() {
         tacGiaDAOImp = new TacGiaDAOImp();
+        sachDAOImp = new SachDAOImp();
         initComponents();
-        jDateChooser1.setDate(date);
         displayAuthor();
     }
     
@@ -34,10 +47,32 @@ public class TacGiaIF extends javax.swing.JInternalFrame {
         List<TacGia> data = tacGiaDAOImp.toList();
         DefaultTableModel model = (DefaultTableModel) tblAuthor.getModel();
         model.setRowCount(0);
+        Calendar c = Calendar.getInstance();
+        String gioiTinh;
         for (TacGia tg : data) {
-            model.addRow(new Object[]{tg.getId(), tg.getButDanh()});
+            c.setTime(tg.getNgayTao());
+            c.add(Calendar.DATE, 2);
+            if (tg.isGioiTinh() == false) {
+                gioiTinh = "Nữ";
+            }else{
+                gioiTinh = "Nam";
+            }
+            model.addRow(new Object[]{tg.getId(), tg.getButDanh(),tg.getTenThat(),tg.getNamSinh(), gioiTinh, sdf.format(c.getTime())});
         }
         tblAuthor.setModel(model);
+    }
+    public void updateTacGia(String id, String butDanh, String tenThat, int namSinh, boolean male, boolean female){
+        TacGia tg = new TacGia();
+        tg.setId(id);
+        tg.setButDanh(butDanh);
+        tg.setTenThat(tenThat);
+        tg.setNamSinh(namSinh);
+        if (male) {
+            tg.setGioiTinh(true);
+        }else if(female){
+            tg.setGioiTinh(false);
+        }
+        tacGiaDAOImp.edit(tg);
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -49,6 +84,8 @@ public class TacGiaIF extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
+        buttonGroup1 = new javax.swing.ButtonGroup();
+        buttonGroup2 = new javax.swing.ButtonGroup();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -71,11 +108,11 @@ public class TacGiaIF extends javax.swing.JInternalFrame {
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         txtAddAuthorRealName = new javax.swing.JTextField();
-        ychAddAuthorBirthYear = new com.toedter.calendar.JYearChooser();
-        jLabel10 = new javax.swing.JLabel();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
+        cboAddAuthorGender = new javax.swing.JRadioButton();
+        cboAddAuthorGender2 = new javax.swing.JRadioButton();
+        txtAddAuthorBirthYear = new javax.swing.JTextField();
+        lblIdErr = new javax.swing.JLabel();
+        lblBirthdayErr = new javax.swing.JLabel();
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -92,6 +129,7 @@ public class TacGiaIF extends javax.swing.JInternalFrame {
         setIconifiable(true);
         setMaximizable(true);
         setResizable(true);
+        setTitle("Quản Lý Tác Giả");
 
         jTabbedPane1.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
 
@@ -100,11 +138,23 @@ public class TacGiaIF extends javax.swing.JInternalFrame {
         jLabel1.setText("Tác Giả");
 
         txtAuthorSearch.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
+        txtAuthorSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtAuthorSearchActionPerformed(evt);
+            }
+        });
 
         btnAuthorSearch.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
+        btnAuthorSearch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-search-18.png"))); // NOI18N
         btnAuthorSearch.setText("Tìm Kiếm");
+        btnAuthorSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAuthorSearchActionPerformed(evt);
+            }
+        });
 
         btnAuthorUpdate.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
+        btnAuthorUpdate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-update-18.png"))); // NOI18N
         btnAuthorUpdate.setText("Cập Nhật");
         btnAuthorUpdate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -113,6 +163,7 @@ public class TacGiaIF extends javax.swing.JInternalFrame {
         });
 
         btnAuthorDelete.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
+        btnAuthorDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-delete-bin-18.png"))); // NOI18N
         btnAuthorDelete.setText("Xóa");
         btnAuthorDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -128,7 +179,15 @@ public class TacGiaIF extends javax.swing.JInternalFrame {
             new String [] {
                 "ID", "Bút Danh", "Tên Thật", "Năm Sinh ", "Giới Tính", "Ngày Tạo"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         tblAuthor.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tblAuthorMouseClicked(evt);
@@ -137,6 +196,7 @@ public class TacGiaIF extends javax.swing.JInternalFrame {
         jScrollPane1.setViewportView(tblAuthor);
 
         btnAuthorRefresh.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
+        btnAuthorRefresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-renew-18.png"))); // NOI18N
         btnAuthorRefresh.setText("Làm Mới");
         btnAuthorRefresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -148,12 +208,12 @@ public class TacGiaIF extends javax.swing.JInternalFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 755, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane1)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 755, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(btnAuthorUpdate)
@@ -163,7 +223,7 @@ public class TacGiaIF extends javax.swing.JInternalFrame {
                                 .addComponent(txtAuthorSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 315, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(btnAuthorSearch)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 210, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 166, Short.MAX_VALUE)
                         .addComponent(btnAuthorRefresh)
                         .addGap(28, 28, 28)))
                 .addContainerGap())
@@ -182,9 +242,9 @@ public class TacGiaIF extends javax.swing.JInternalFrame {
                     .addComponent(btnAuthorRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnAuthorUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnAuthorDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(206, Short.MAX_VALUE))
+                .addContainerGap(223, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Tác Giả", jPanel2);
@@ -197,6 +257,11 @@ public class TacGiaIF extends javax.swing.JInternalFrame {
         jLabel3.setText("Mã Tác Giả:");
 
         txtAddAuthorId.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        txtAddAuthorId.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtAddAuthorIdKeyReleased(evt);
+            }
+        });
 
         jLabel4.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         jLabel4.setText("Bút Danh:");
@@ -204,9 +269,11 @@ public class TacGiaIF extends javax.swing.JInternalFrame {
         txtAddAuthorPenName.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
 
         btnAddAuthorRefresh.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        btnAddAuthorRefresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-renew-18.png"))); // NOI18N
         btnAddAuthorRefresh.setText("Làm mới");
 
         btnAddNewAuthor.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        btnAddNewAuthor.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-add-property-18.png"))); // NOI18N
         btnAddNewAuthor.setText("Thêm mới");
         btnAddNewAuthor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -225,17 +292,26 @@ public class TacGiaIF extends javax.swing.JInternalFrame {
 
         txtAddAuthorRealName.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
 
-        jLabel10.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        jLabel10.setText("Ngày Tạo:");
+        buttonGroup1.add(cboAddAuthorGender);
+        cboAddAuthorGender.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        cboAddAuthorGender.setText("Nam");
 
-        jDateChooser1.setDateFormatString("yyyy-MM-dd");
-        jDateChooser1.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
+        buttonGroup1.add(cboAddAuthorGender2);
+        cboAddAuthorGender2.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        cboAddAuthorGender2.setText("Nữ");
 
-        jRadioButton1.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        jRadioButton1.setText("Nam");
+        txtAddAuthorBirthYear.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        txtAddAuthorBirthYear.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtAddAuthorBirthYearKeyReleased(evt);
+            }
+        });
 
-        jRadioButton2.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        jRadioButton2.setText("Nữ");
+        lblIdErr.setFont(new java.awt.Font("Arial", 2, 12)); // NOI18N
+        lblIdErr.setForeground(new java.awt.Color(248, 4, 19));
+
+        lblBirthdayErr.setFont(new java.awt.Font("Arial", 2, 12)); // NOI18N
+        lblBirthdayErr.setForeground(new java.awt.Color(248, 4, 19));
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -246,16 +322,18 @@ public class TacGiaIF extends javax.swing.JInternalFrame {
                 .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 755, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(lblBirthdayErr, javax.swing.GroupLayout.PREFERRED_SIZE, 431, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
                         .addGap(55, 55, 55)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addGap(52, 52, 52)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtAddAuthorId)
@@ -263,17 +341,17 @@ public class TacGiaIF extends javax.swing.JInternalFrame {
                             .addComponent(txtAddAuthorRealName)
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(ychAddAuthorBirthYear, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addGroup(jPanel3Layout.createSequentialGroup()
-                                            .addComponent(jRadioButton1)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(jRadioButton2))
-                                        .addComponent(jDateChooser1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(jPanel3Layout.createSequentialGroup()
+                                        .addComponent(cboAddAuthorGender)
+                                        .addGap(63, 63, 63)
+                                        .addComponent(cboAddAuthorGender2))
+                                    .addComponent(txtAddAuthorBirthYear, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(0, 0, Short.MAX_VALUE))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                    .addGroup(jPanel3Layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnAddAuthorRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(btnAddAuthorRefresh)
+                            .addComponent(lblIdErr, javax.swing.GroupLayout.PREFERRED_SIZE, 431, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(18, 18, 18)
                 .addComponent(btnAddNewAuthor)
                 .addGap(58, 58, 58))
@@ -282,38 +360,37 @@ public class TacGiaIF extends javax.swing.JInternalFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(24, 24, 24)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addGap(47, 47, 47)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(txtAddAuthorId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(35, 35, 35)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel4)
-                            .addComponent(txtAddAuthorPenName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(28, 28, 28)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel7)
-                            .addComponent(txtAddAuthorRealName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(27, 27, 27)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel8)
-                            .addComponent(ychAddAuthorBirthYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(38, 38, 38)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel9)
-                            .addComponent(jRadioButton1)
-                            .addComponent(jRadioButton2))
-                        .addGap(33, 33, 33)
-                        .addComponent(jLabel10))
-                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(33, 33, 33)
+                .addComponent(jLabel2)
+                .addGap(47, 47, 47)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(txtAddAuthorId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblIdErr, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(13, 13, 13)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(txtAddAuthorPenName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(28, 28, 28)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(txtAddAuthorRealName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(24, 24, 24)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(txtAddAuthorBirthYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblBirthdayErr, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(13, 13, 13)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(cboAddAuthorGender)
+                    .addComponent(cboAddAuthorGender2))
+                .addGap(40, 40, 40)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAddAuthorRefresh)
                     .addComponent(btnAddNewAuthor))
-                .addGap(27, 27, 27))
+                .addContainerGap(115, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Thêm mới Tác Giả", jPanel3);
@@ -334,17 +411,60 @@ public class TacGiaIF extends javax.swing.JInternalFrame {
 
     private void btnAuthorUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAuthorUpdateActionPerformed
         // TODO add your handling code here:
-        
+        tu.setVisible(true);
     }//GEN-LAST:event_btnAuthorUpdateActionPerformed
 
     private void btnAuthorDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAuthorDeleteActionPerformed
         // TODO add your handling code here:
+        int choice = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa?","Hỏi", JOptionPane.YES_NO_OPTION);
+        if (choice ==JOptionPane.NO_OPTION) {
+            return;
+        }
         
+        try {
+            int selectedRow = tblAuthor.getSelectedRow();
+            TableModel model = tblAuthor.getModel();
+            String id = model.getValueAt(selectedRow, 0).toString();
+            List<Sach> sa = sachDAOImp.findByTacGia(id);
+            if (sa.isEmpty()) {
+                tacGiaDAOImp.remove(id);
+                JOptionPane.showMessageDialog(this, "Xóa thành công","Success",1);
+            }else{
+                JOptionPane.showMessageDialog(rootPane, "Không thể xóa tác giả này", "Lỗi", 0);
+            }
+            displayAuthor();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error","Error",0);
+        }
     }//GEN-LAST:event_btnAuthorDeleteActionPerformed
 
     private void tblAuthorMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblAuthorMouseClicked
         // TODO add your handling code here:
+        int selectedRow = tblAuthor.getSelectedRow();
+        TableModel model = tblAuthor.getModel();
+        String id = model.getValueAt(selectedRow, 0).toString();
+        String butDanh = model.getValueAt(selectedRow, 1).toString();
+        String tenThat = model.getValueAt(selectedRow, 2).toString();
+        int namSinh = (int) model.getValueAt(selectedRow, 3);
+        String gioiTinh = model.getValueAt(selectedRow, 4).toString();
+        boolean gt = false;
+        tu.txtAuthorId.setText(id);
+        tu.txtAuthorPenName.setText(butDanh);
+        tu.txtAuthorRealName.setText(tenThat);
+        tu.txtAuthorBirthYear.setText(String.valueOf(namSinh));
+       
+        if (gioiTinh == "Nam") {
+            gt = true;
+        }else if(gioiTinh == "Nữ"){
+            gt = false;
+        }
         
+        if (gt == true) {
+            tu.chbMale.setSelected(true);
+        }else{
+            tu.chbFemale.setSelected(true);
+        }
     }//GEN-LAST:event_tblAuthorMouseClicked
 
     private void btnAuthorRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAuthorRefreshActionPerformed
@@ -356,21 +476,74 @@ public class TacGiaIF extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         try {
             TacGia tg = new TacGia();
-            String d = ((JTextField)jDateChooser1.getDateEditor().getUiComponent()).getText();
-//            String gender = (String) cboAddAuthorGender.getSelectedItem();
+            LocalDate today = LocalDate.now();
+            Boolean gender = false;
+            if(cboAddAuthorGender.isSelected()){
+                gender = true;
+            }else if(cboAddAuthorGender2.isSelected()){
+                gender = false;
+            }
             tg.setId(txtAddAuthorId.getText());
             tg.setButDanh(txtAddAuthorPenName.getText());
             tg.setTenThat(txtAddAuthorRealName.getText());
-            tg.setNamSinh(ychAddAuthorBirthYear.getYear());
-//            tg.setGioiTinh(gender);
-            tg.setNgayTao(java.sql.Date.valueOf(d));
+            tg.setNamSinh(Integer.parseInt(txtAddAuthorBirthYear.getText()));
+            tg.setGioiTinh(gender);
+            tg.setNgayTao(java.sql.Date.valueOf(today));
             tacGiaDAOImp.add(tg);
             JOptionPane.showMessageDialog(rootPane, "Thêm tác giả mới thành công", "Thông báo", 1, frameIcon);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(rootPane, "Thêm tác giả mới không thành công", "Thông báo", 0, frameIcon);
+            e.printStackTrace();
         }
         displayAuthor();
     }//GEN-LAST:event_btnAddNewAuthorActionPerformed
+
+    private void btnAuthorSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAuthorSearchActionPerformed
+        // TODO add your handling code here:
+        if (txtAuthorSearch.getText().equals("")) {
+            JOptionPane.showMessageDialog(this, "Cần nhập thông tin để tìm kiếm! ");
+            return;            
+        }
+        try{
+            DefaultTableModel table = (DefaultTableModel)tblAuthor.getModel();
+            String search = txtAuthorSearch.getText();
+            TableRowSorter <DefaultTableModel> tr = new TableRowSorter<DefaultTableModel>(table);
+            tblAuthor.setRowSorter(tr);
+            tr.setRowFilter(RowFilter.regexFilter(search));
+        }
+        catch(Exception e){
+        JOptionPane.showMessageDialog(this, "Error"+e.getMessage());
+        e.printStackTrace();
+        }
+    }//GEN-LAST:event_btnAuthorSearchActionPerformed
+
+    private void txtAuthorSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAuthorSearchActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtAuthorSearchActionPerformed
+
+    private void txtAddAuthorIdKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAddAuthorIdKeyReleased
+        // TODO add your handling code here:
+        String pattern = "^TG[0-9]{3}$";
+        Pattern patt = Pattern.compile(pattern);
+        Matcher match = patt.matcher(txtAddAuthorId.getText());
+        if(!match.matches()){
+            lblIdErr.setText("Mã tác giả phải có 5 ký tự và theo định dạng TGxxx (x là số)");
+        }else{
+            lblIdErr.setText("");
+        }
+    }//GEN-LAST:event_txtAddAuthorIdKeyReleased
+
+    private void txtAddAuthorBirthYearKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAddAuthorBirthYearKeyReleased
+        // TODO add your handling code here:
+        String pattern = "^(1[0-9]{3})|(20([01]\\d|2[0-1]))$";
+        Pattern patt = Pattern.compile(pattern);
+        Matcher match = patt.matcher(txtAddAuthorBirthYear.getText());
+        if(!match.matches()){
+            lblBirthdayErr.setText("Năm sinh chỉ là số và không được vượt quá năm hiện tại");
+        }else{
+            lblBirthdayErr.setText("");
+        }
+    }//GEN-LAST:event_txtAddAuthorBirthYearKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -380,9 +553,11 @@ public class TacGiaIF extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnAuthorRefresh;
     private javax.swing.JButton btnAuthorSearch;
     private javax.swing.JButton btnAuthorUpdate;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
+    private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.ButtonGroup buttonGroup2;
+    private javax.swing.JRadioButton cboAddAuthorGender;
+    private javax.swing.JRadioButton cboAddAuthorGender2;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -392,15 +567,27 @@ public class TacGiaIF extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JLabel lblBirthdayErr;
+    private javax.swing.JLabel lblIdErr;
     private javax.swing.JTable tblAuthor;
+    private javax.swing.JTextField txtAddAuthorBirthYear;
     private javax.swing.JTextField txtAddAuthorId;
     private javax.swing.JTextField txtAddAuthorPenName;
     private javax.swing.JTextField txtAddAuthorRealName;
     private javax.swing.JTextField txtAuthorSearch;
-    private com.toedter.calendar.JYearChooser ychAddAuthorBirthYear;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void doUpdateTacGia(String id, String butDanh, String tenThat, int namSinh, boolean male, boolean female) {
+        try {
+            updateTacGia(id, butDanh, tenThat, namSinh, male, female);
+            JOptionPane.showMessageDialog(rootPane, "Cập nhật thông tin tác giả thành công", "Thông Báo", 1);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(rootPane, "Cập nhật thông tin tác giả không thành công", "Lỗi", 0);
+            e.printStackTrace();
+        }
+        displayAuthor();
+    }
 }

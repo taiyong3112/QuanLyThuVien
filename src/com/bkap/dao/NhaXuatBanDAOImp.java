@@ -62,7 +62,7 @@ public class NhaXuatBanDAOImp implements INhaXuatBanDAO{
 
     @Override
     public void edit(NhaXuatBan nxb) {
-        SqlConnection.executeUpdate("UPDATE NhaXuatBan SET tenNXB = ? WHERE id = ?", nxb.getTenNXB(),nxb.getId());
+        SqlConnection.executeUpdate("UPDATE NhaXuatBan SET tenNXB = ? WHERE id = ?", nxb.getTenNXB(), nxb.getId());
     }
 
     @Override

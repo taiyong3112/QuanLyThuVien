@@ -20,6 +20,10 @@ public class PhieuMuon {
     private float tongTien;
     private boolean trangThai;
     private Date ngayTao;
+    private String tenDocGia;
+    private String ngaySinh;
+    private String sdt;
+    private String email;
 
     public PhieuMuon() {
     }
@@ -97,6 +101,38 @@ public class PhieuMuon {
 
     public void setNgayTao(Date ngayTao) {
         this.ngayTao = ngayTao;
+    }
+
+    public String getTenDocGia() {
+        return tenDocGia;
+    }
+
+    public void setTenDocGia(String tenDocGia) {
+        this.tenDocGia = tenDocGia;
+    }
+
+    public String getNgaySinh() {
+        return ngaySinh;
+    }
+
+    public void setNgaySinh(String ngaySinh) {
+        this.ngaySinh = ngaySinh;
+    }
+
+    public String getSdt() {
+        return sdt;
+    }
+
+    public void setSdt(String sdt) {
+        this.sdt = sdt;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
     
    

@@ -5,6 +5,8 @@
  */
 package com.bkap.entities;
 
+import java.sql.Date;
+
 /**
  *
  * @author TaiyoNg
@@ -16,18 +18,20 @@ public class NguoiDung {
     private String matKhau;
     private String sdt;
     private String role;
-
+    private Date ngayTao;
+    
     public NguoiDung() {
     }
 
 
-    public NguoiDung(String id, String tenNguoiDung, String email, String matKhau, String sdt, String role) {
+    public NguoiDung(String id, String tenNguoiDung, String email, String matKhau, String sdt, String role, Date ngayTao) {
         this.id = id;
         this.tenNguoiDung = tenNguoiDung;
         this.email = email;
         this.matKhau = matKhau;
         this.sdt = sdt;
         this.role = role;
+        this.ngayTao = ngayTao;
     }
     
     public String getId() {
@@ -76,6 +80,14 @@ public class NguoiDung {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public Date getNgayTao() {
+        return ngayTao;
+    }
+
+    public void setNgayTao(Date ngayTao) {
+        this.ngayTao = ngayTao;
     }
     
     

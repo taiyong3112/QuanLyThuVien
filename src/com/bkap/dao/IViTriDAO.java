@@ -10,11 +10,11 @@ import java.util.List;
 
 /**
  *
- * @author TaiyoNg
+ * @author NAM_STD
  */
 public interface IViTriDAO {
     List<ViTri> toList();
-    ViTri find(String id);
+    ViTri find (String id);
     void add(ViTri vt);
     void edit(ViTri vt);
     void remove(String id);

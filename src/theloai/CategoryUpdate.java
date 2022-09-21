@@ -7,19 +7,33 @@ package theloai;
 
 import com.bkap.dao.TheLoaiDAOImp;
 import com.bkap.entities.TheLoai;
+import javax.swing.JOptionPane;
 import quanlythuvien.MainFrame;
 
 /**
  *
  * @author TaiyoNg
  */
-public class CategoryUpdate extends javax.swing.JFrame {
+public class CategoryUpdate extends javax.swing.JFrame{
     TheLoaiDAOImp theLoaiDAOImp;
     /**
      * Creates new form CategoryUpdate
      */
-    public CategoryUpdate() {
+    
+    CallbackCategory cbCa;
+    interface CallbackCategory{
+        public void DoCategoryUpdate(String id, String name, Boolean status);
+    }
+
+    public CategoryUpdate(CallbackCategory cbCa) {
         theLoaiDAOImp = new TheLoaiDAOImp();
+        initComponents();
+        this.cbCa = cbCa;
+    }
+    
+    
+    public CategoryUpdate() {
+        
         initComponents();
     }
 
@@ -65,6 +79,7 @@ public class CategoryUpdate extends javax.swing.JFrame {
         chbCategoryStatus.setText("Hiện");
 
         btnCancel.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        btnCancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-cancel-18.png"))); // NOI18N
         btnCancel.setText("Hủy");
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -73,6 +88,7 @@ public class CategoryUpdate extends javax.swing.JFrame {
         });
 
         btnCategoryUpdate.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        btnCategoryUpdate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-update-18.png"))); // NOI18N
         btnCategoryUpdate.setText("Cập nhật");
         btnCategoryUpdate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -102,7 +118,7 @@ public class CategoryUpdate extends javax.swing.JFrame {
                             .addComponent(txtCategoryName, javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
                                 .addComponent(btnCategoryUpdate)))
                         .addGap(57, 57, 57))))
         );
@@ -140,11 +156,11 @@ public class CategoryUpdate extends javax.swing.JFrame {
 
     private void btnCategoryUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCategoryUpdateActionPerformed
         // TODO add your handling code here:
-        TheLoai tl = new TheLoai();
-        tl.setId(txtCategoryId.getText());
-        tl.setTenTheLoai(txtCategoryName.getText());
-        tl.setTrangThai(chbCategoryStatus.isSelected());
-        theLoaiDAOImp.edit(tl);
+        int choice = JOptionPane.showConfirmDialog(rootPane, "Bạn có chắc muốn cập nhật thể loại sách này ?", "Xác Nhận", 0);
+        if(choice == JOptionPane.NO_OPTION){
+            return;
+        }
+        cbCa.DoCategoryUpdate(txtCategoryId.getText(), txtCategoryName.getText(), chbCategoryStatus.isSelected());
         dispose();
     }//GEN-LAST:event_btnCategoryUpdateActionPerformed
 

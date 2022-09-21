@@ -9,7 +9,7 @@ import java.sql.Date;
 
 /**
  *
- * @author TaiyoNg
+ * @author NAM_STD
  */
 public class ViTri {
     private String id;
@@ -56,3 +56,5 @@ public class ViTri {
     
     
 }
+
+

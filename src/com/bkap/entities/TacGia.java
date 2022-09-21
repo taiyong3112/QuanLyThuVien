@@ -15,14 +15,14 @@ public class TacGia {
     private String id;
     private String butDanh;
     private String tenThat;
-    private String gioiTinh;
+    private Boolean gioiTinh;
     private int namSinh;
     private Date ngayTao;
 
     public TacGia() {
     }
 
-    public TacGia(String id, String butDanh, String tenThat, String gioiTinh, int namSinh, Date ngayTao) {
+    public TacGia(String id, String butDanh, String tenThat, Boolean gioiTinh, int namSinh, Date ngayTao) {
         this.id = id;
         this.butDanh = butDanh;
         this.tenThat = tenThat;
@@ -55,11 +55,11 @@ public class TacGia {
         this.tenThat = tenThat;
     }
 
-    public String getGioiTinh() {
+    public Boolean isGioiTinh() {
         return gioiTinh;
     }
 
-    public void setGioiTinh(String gioiTinh) {
+    public void setGioiTinh(Boolean gioiTinh) {
         this.gioiTinh = gioiTinh;
     }
 

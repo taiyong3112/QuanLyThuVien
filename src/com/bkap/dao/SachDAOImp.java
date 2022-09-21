@@ -20,9 +20,9 @@ import java.util.logging.Logger;
  */
 public class SachDAOImp implements ISachDAO{
     
-    public ArrayList<Sach> findByName(String tenSach){
+    public Sach findByName(String tenSach){
         ArrayList<Sach> data = new ArrayList<>();
-        ResultSet rs = SqlConnection.execute("SELECT * FROM Sach WHERE tenSach LIKE N'%?%'", tenSach);
+        ResultSet rs = SqlConnection.execute("SELECT * FROM Sach WHERE tenSach LIKE ?", tenSach);
         try {
             while(rs.next()){
                 Sach sa = new Sach();
@@ -38,12 +38,12 @@ public class SachDAOImp implements ISachDAO{
                 sa.setSoLuong(rs.getInt("soLuong"));
                 sa.setTrangThai(rs.getBoolean("trangThai"));
                 sa.setNgayTao(rs.getDate("ngayTao"));
-                data.add(sa);
+                return sa;
             }
         } catch (SQLException ex) {
             Logger.getLogger(SachDAOImp.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return data;
+        return null;
     }
     @Override
     public List<Sach> toList() {
@@ -124,4 +124,29 @@ public class SachDAOImp implements ISachDAO{
         SqlConnection.executeUpdate("DELETE FROM Sach WHERE id = ?", id);
     }
     
+    public List<Sach> findByTacGia(String id) {
+        List<Sach> data = new ArrayList<>();
+        ResultSet rs = SqlConnection.execute("SELECT * FROM Sach WHERE idTacGia LIKE ?", id);
+        try {
+            while(rs.next()){
+                Sach sa = new Sach();
+                sa.setId(rs.getString("id"));
+                sa.setIdTheLoai(rs.getString("idTheLoai"));
+                sa.setIdTacGia(rs.getString("idTacGia"));
+                sa.setIdNXB(rs.getString("idNXB"));
+                sa.setIdViTri(rs.getString("idViTri"));
+                sa.setTenSach(rs.getString("tenSach"));
+                sa.setNamXuatBan(rs.getInt("namXuatBan"));
+                sa.setSoTrang(rs.getInt("soTrang"));
+                sa.setGiaMuon(rs.getFloat("giaMuon"));
+                sa.setSoLuong(rs.getInt("soLuong"));
+                sa.setTrangThai(rs.getBoolean("trangThai"));
+                sa.setNgayTao(rs.getDate("ngayTao"));
+                data.add(sa);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(SachDAOImp.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return data;
+    }
 }

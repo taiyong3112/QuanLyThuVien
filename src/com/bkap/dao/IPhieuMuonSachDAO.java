@@ -6,13 +6,14 @@
 package com.bkap.dao;
 
 import com.bkap.entities.PhieuMuonSach;
+import java.util.List;
 
 /**
  *
  * @author TaiyoNg
  */
 public interface IPhieuMuonSachDAO {
-    PhieuMuonSach find(int id);
+    List<PhieuMuonSach> find(int id);
     void add(PhieuMuonSach pms);
     void edit(PhieuMuonSach pms);
     void remove(int id);

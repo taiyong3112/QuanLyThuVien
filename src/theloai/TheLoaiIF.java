@@ -10,37 +10,56 @@ import com.bkap.entities.TheLoai;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
  * @author TaiyoNg
  */
-public class TheLoaiIF extends javax.swing.JInternalFrame{
+public class TheLoaiIF extends javax.swing.JInternalFrame implements CategoryUpdate.CallbackCategory{
     TheLoaiDAOImp theLoaiDAOImp;
-    CategoryUpdate cu = new CategoryUpdate();
-    Date date = new Date();
+    CategoryUpdate cu = new CategoryUpdate(this);
     /**
      * Creates new form TheLoai
      */
     public TheLoaiIF() {
         theLoaiDAOImp = new TheLoaiDAOImp();
         initComponents();
-        jDateChooser1.setDate(date);
         displayCategory();
     }
     
     public void displayCategory(){
         List<TheLoai> data = theLoaiDAOImp.toList();
         DefaultTableModel model = (DefaultTableModel)tblCategory.getModel();
+        TableRowSorter<DefaultTableModel> tr = new TableRowSorter<DefaultTableModel>(model);
+        tblCategory.setRowSorter(tr);
+        tr.setRowFilter(null);
+        String trangThai;
         model.setRowCount(0);
         for (TheLoai tl : data) {
-            model.addRow(new Object[] {tl.getId(), tl.getTenTheLoai(), tl.isTrangThai(), tl.getNgayTao()});
+            if (tl.isTrangThai() == true) {
+                trangThai = "Hiện";
+            }else{
+                trangThai = "Ẩn";
+            }
+            model.addRow(new Object[] {tl.getId(), tl.getTenTheLoai(), trangThai, tl.getNgayTao()});
         }
         tblCategory.setModel(model);
+    }
+    
+    public void updateTheLoai(String id, String name, Boolean status){
+        TheLoai tl = new TheLoai();
+        tl.setId(id);
+        tl.setTenTheLoai(name);
+        tl.setTrangThai(status);
+        theLoaiDAOImp.edit(tl);
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -71,13 +90,13 @@ public class TheLoaiIF extends javax.swing.JInternalFrame{
         chbAddCategoryStatus = new javax.swing.JCheckBox();
         btnAddNewCategory = new javax.swing.JButton();
         btnAddCategoryRefresh = new javax.swing.JButton();
-        jLabel6 = new javax.swing.JLabel();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        lblIdErr = new javax.swing.JLabel();
 
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
         setResizable(true);
+        setTitle("Quản Lý Thể Loại");
 
         pnlCategory.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
 
@@ -93,15 +112,7 @@ public class TheLoaiIF extends javax.swing.JInternalFrame{
             new String [] {
                 "ID", "Tên Thể Loại", "Trạng Thái", "Ngày Tạo"
             }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class, java.lang.Object.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
+        ));
         tblCategory.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tblCategoryMouseClicked(evt);
@@ -112,9 +123,16 @@ public class TheLoaiIF extends javax.swing.JInternalFrame{
         txtSearch.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
 
         btnSearch.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
+        btnSearch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-search-18.png"))); // NOI18N
         btnSearch.setText("Tìm Kiếm");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
 
         btnCategoryRefresh.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
+        btnCategoryRefresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-renew-18.png"))); // NOI18N
         btnCategoryRefresh.setText("Làm Mới");
         btnCategoryRefresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -123,6 +141,7 @@ public class TheLoaiIF extends javax.swing.JInternalFrame{
         });
 
         btnCategoryUpdate.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
+        btnCategoryUpdate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-update-18.png"))); // NOI18N
         btnCategoryUpdate.setText("Cập Nhật");
         btnCategoryUpdate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -131,6 +150,7 @@ public class TheLoaiIF extends javax.swing.JInternalFrame{
         });
 
         btnCategoryDelete.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
+        btnCategoryDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-delete-bin-18.png"))); // NOI18N
         btnCategoryDelete.setText("Xóa");
         btnCategoryDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -155,7 +175,7 @@ public class TheLoaiIF extends javax.swing.JInternalFrame{
                         .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 315, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(btnSearch)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 222, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 178, Short.MAX_VALUE)
                 .addComponent(btnCategoryRefresh)
                 .addGap(28, 28, 28))
         );
@@ -174,8 +194,8 @@ public class TheLoaiIF extends javax.swing.JInternalFrame{
                     .addComponent(btnCategoryUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnCategoryDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(211, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 217, Short.MAX_VALUE)
+                .addGap(128, 128, 128))
         );
 
         pnlCategory.addTab("Thể loại sách", jPanel1);
@@ -194,6 +214,11 @@ public class TheLoaiIF extends javax.swing.JInternalFrame{
         jLabel5.setText("Trạng thái:");
 
         txtAddCategoryId.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        txtAddCategoryId.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtAddCategoryIdKeyReleased(evt);
+            }
+        });
 
         txtAddCategoryName.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
 
@@ -201,6 +226,7 @@ public class TheLoaiIF extends javax.swing.JInternalFrame{
         chbAddCategoryStatus.setText("Hiện");
 
         btnAddNewCategory.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        btnAddNewCategory.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-add-property-18.png"))); // NOI18N
         btnAddNewCategory.setText("Thêm mới");
         btnAddNewCategory.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -209,14 +235,11 @@ public class TheLoaiIF extends javax.swing.JInternalFrame{
         });
 
         btnAddCategoryRefresh.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        btnAddCategoryRefresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-renew-18.png"))); // NOI18N
         btnAddCategoryRefresh.setText("Làm mới");
 
-        jLabel6.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        jLabel6.setText("Ngày tạo:");
-
-        jDateChooser1.setDateFormatString("yyyy-MM-dd");
-        jDateChooser1.setEnabled(false);
-        jDateChooser1.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        lblIdErr.setFont(new java.awt.Font("Arial", 2, 12)); // NOI18N
+        lblIdErr.setForeground(new java.awt.Color(252, 9, 31));
 
         javax.swing.GroupLayout pnlAddCategoryLayout = new javax.swing.GroupLayout(pnlAddCategory);
         pnlAddCategory.setLayout(pnlAddCategoryLayout);
@@ -231,25 +254,24 @@ public class TheLoaiIF extends javax.swing.JInternalFrame{
                 .addGroup(pnlAddCategoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4)
                     .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addGap(52, 52, 52)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGap(35, 35, 35)
                 .addGroup(pnlAddCategoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnlAddCategoryLayout.createSequentialGroup()
+                        .addGap(17, 17, 17)
+                        .addComponent(chbAddCategoryStatus)
+                        .addContainerGap(507, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlAddCategoryLayout.createSequentialGroup()
                         .addGroup(pnlAddCategoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(pnlAddCategoryLayout.createSequentialGroup()
-                                .addGap(106, 106, 106)
-                                .addComponent(btnAddCategoryRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(95, 95, 95)
+                                .addComponent(btnAddCategoryRefresh)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(btnAddNewCategory))
                             .addComponent(txtAddCategoryId, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtAddCategoryName, javax.swing.GroupLayout.Alignment.LEADING))
-                        .addGap(207, 207, 207))
-                    .addGroup(pnlAddCategoryLayout.createSequentialGroup()
-                        .addGroup(pnlAddCategoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(chbAddCategoryStatus)
-                            .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(txtAddCategoryName, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblIdErr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(207, 207, 207))))
         );
         pnlAddCategoryLayout.setVerticalGroup(
             pnlAddCategoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -260,7 +282,9 @@ public class TheLoaiIF extends javax.swing.JInternalFrame{
                 .addGroup(pnlAddCategoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(txtAddCategoryId, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(35, 35, 35)
+                .addGap(9, 9, 9)
+                .addComponent(lblIdErr, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnlAddCategoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(txtAddCategoryName, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -268,15 +292,11 @@ public class TheLoaiIF extends javax.swing.JInternalFrame{
                 .addGroup(pnlAddCategoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(chbAddCategoryStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(41, 41, 41)
-                .addGroup(pnlAddCategoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6)
-                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 71, Short.MAX_VALUE)
                 .addGroup(pnlAddCategoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAddCategoryRefresh)
                     .addComponent(btnAddNewCategory))
-                .addGap(129, 129, 129))
+                .addGap(179, 179, 179))
         );
 
         pnlCategory.addTab("Thêm mới thể loại", pnlAddCategory);
@@ -306,7 +326,12 @@ public class TheLoaiIF extends javax.swing.JInternalFrame{
         TableModel model = tblCategory.getModel();
         String id = model.getValueAt(index, 0).toString();
         String categoryName = model.getValueAt(index, 1).toString();
-        Boolean categoryStatus = (Boolean) model.getValueAt(index, 2);
+        Boolean categoryStatus = null;
+        if (model.getValueAt(index, 2).toString().equals("Ẩn")) {
+            categoryStatus = false;
+        }else{
+            categoryStatus = true;
+        }
         
         
         cu.txtCategoryId.setText(id);
@@ -316,14 +341,21 @@ public class TheLoaiIF extends javax.swing.JInternalFrame{
 
     private void btnAddNewCategoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewCategoryActionPerformed
         // TODO add your handling code here:
-        TheLoai tl = new TheLoai();
-        String d = ((JTextField)jDateChooser1.getDateEditor().getUiComponent()).getText();
-        tl.setId(txtAddCategoryId.getText());
-        tl.setTenTheLoai(txtAddCategoryName.getText());
-        tl.setTrangThai(chbAddCategoryStatus.isSelected());
-        tl.setNgayTao(java.sql.Date.valueOf(d));
-        theLoaiDAOImp.add(tl);
-        displayCategory();
+        try {
+            TheLoai tl = new TheLoai();
+            LocalDate today = LocalDate.now();
+            tl.setId(txtAddCategoryId.getText());
+            tl.setTenTheLoai(txtAddCategoryName.getText());
+            tl.setTrangThai(chbAddCategoryStatus.isSelected());
+            tl.setNgayTao(java.sql.Date.valueOf(today));
+            theLoaiDAOImp.add(tl);
+            displayCategory();
+            JOptionPane.showMessageDialog(rootPane, "Thêm thể loại mới thành công", "Thông báo", 1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(rootPane, "Thêm thể loại mới không thành công", "Lỗi", 0);
+            
+        }
     }//GEN-LAST:event_btnAddNewCategoryActionPerformed
 
     private void btnCategoryRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCategoryRefreshActionPerformed
@@ -342,6 +374,38 @@ public class TheLoaiIF extends javax.swing.JInternalFrame{
         }
     }//GEN-LAST:event_btnCategoryDeleteActionPerformed
 
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        // TODO add your handling code here:
+        if (txtSearch.getText().equals("")) {
+            JOptionPane.showMessageDialog(rootPane, "Xin mời nhập từ khóa tìm kiếm", "Thông báo", 1);
+                    
+        }else{
+            try {
+                DefaultTableModel model = (DefaultTableModel)tblCategory.getModel();
+                String search = txtSearch.getText();
+                TableRowSorter<DefaultTableModel> tr = new TableRowSorter<DefaultTableModel>(model);
+                tblCategory.setRowSorter(tr);
+                tr.setRowFilter(RowFilter.regexFilter(search));
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,"Error" + e.getMessage());
+                e.printStackTrace();
+            }
+            
+        }
+    }//GEN-LAST:event_btnSearchActionPerformed
+
+    private void txtAddCategoryIdKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAddCategoryIdKeyReleased
+        // TODO add your handling code here:
+        String pattern = "^TL[0-9]{3}$";
+        Pattern patt = Pattern.compile(pattern);
+        Matcher match = patt.matcher(txtAddCategoryId.getText());
+        if(!match.matches()){
+            lblIdErr.setText("Mã Thể Loại phải có 5 ký tự và theo định dạng TLxxx (x là số)");
+        }else{
+            lblIdErr.setText("");
+        }
+    }//GEN-LAST:event_txtAddCategoryIdKeyReleased
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddCategoryRefresh;
@@ -351,15 +415,14 @@ public class TheLoaiIF extends javax.swing.JInternalFrame{
     private javax.swing.JButton btnCategoryUpdate;
     private javax.swing.JButton btnSearch;
     private javax.swing.JCheckBox chbAddCategoryStatus;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblIdErr;
     private javax.swing.JPanel pnlAddCategory;
     private javax.swing.JTabbedPane pnlCategory;
     private javax.swing.JTable tblCategory;
@@ -367,6 +430,18 @@ public class TheLoaiIF extends javax.swing.JInternalFrame{
     private javax.swing.JTextField txtAddCategoryName;
     private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void DoCategoryUpdate(String id, String name, Boolean status) {
+        try {
+            updateTheLoai(id, name, status); 
+            JOptionPane.showMessageDialog(rootPane, "Cập nhật thể loại thành công", "Thông báo", 1);
+            displayCategory();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(rootPane, "Cập nhật thể loại không thành công", "Lỗi", 0);
+            e.printStackTrace();
+        }
+    }
 
 
 }

@@ -7,6 +7,8 @@ package com.bkap.dao;
 
 import com.bkap.entities.PhieuMuon;
 import com.bkap.util.SqlConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -18,12 +20,14 @@ import java.util.logging.Logger;
  *
  * @author TaiyoNg
  */
-public class PhieuMuonDAOImp implements IPhieuMuonDAO{
 
+
+public class PhieuMuonDAOImp implements IPhieuMuonDAO{
+    Connection conn = SqlConnection.getConnect();
     @Override
     public List<PhieuMuon> toList() {
         List<PhieuMuon> data = new ArrayList<>();
-        ResultSet rs = SqlConnection.execute("SELECT * FROM PhieuMuon", null);
+        ResultSet rs = SqlConnection.execute("{call PhieuMuon_List()}", null);
         try {
             while(rs.next()){
                 PhieuMuon pm = new PhieuMuon();
@@ -35,6 +39,7 @@ public class PhieuMuonDAOImp implements IPhieuMuonDAO{
                 pm.setTongTien(rs.getFloat("tongTien"));
                 pm.setTrangThai(rs.getBoolean("trangThai"));
                 pm.setNgayTao(rs.getDate("ngayTao"));
+                pm.setTenDocGia(rs.getString("tenDocGia"));
                 data.add(pm);
             }
         } catch (SQLException ex) {
@@ -45,7 +50,44 @@ public class PhieuMuonDAOImp implements IPhieuMuonDAO{
 
     @Override
     public PhieuMuon find(int id) {
-        ResultSet rs = SqlConnection.execute("SELECT * FROM PhieuMuon WHERE id LIKE ?", id);
+        ResultSet rs = SqlConnection.execute("{call PhieuMuon_Find(?)}", id);
+        try {
+            while(rs.next()){
+                PhieuMuon pm = new PhieuMuon();
+                pm.setId(rs.getInt("id"));
+                pm.setIdDocGia(rs.getString("idDocGia"));
+                pm.setSoLuongMuon(rs.getInt("soLuongMuon"));
+                pm.setNgayMuon(rs.getDate("ngayMuon"));
+                pm.setHanTra(rs.getDate("hanTra"));
+                pm.setTongTien(rs.getFloat("tongTien"));
+                pm.setTrangThai(rs.getBoolean("trangThai"));
+                pm.setNgayTao(rs.getDate("ngayTao"));
+                pm.setTenDocGia(rs.getString("tenDocGia"));
+                pm.setNgaySinh(rs.getString("ngaySinh"));
+                pm.setEmail(rs.getString("email"));
+                pm.setSdt(rs.getString("sdt"));
+                return pm;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PhieuMuonDAOImp.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    @Override
+    public void add(PhieuMuon pm) {
+        SqlConnection.executeUpdate("{call PhieuMuon_Insert(?,?,?,?,?,?,?)}", pm.getIdDocGia(), pm.getSoLuongMuon(), pm.getNgayMuon(), pm.getHanTra(), pm.getTongTien(), pm.isTrangThai(), pm.getNgayTao());
+
+    }
+    
+    @Override
+    public void remove(int id) {
+        SqlConnection.executeUpdate("{call PhieuMuon_Delete(?)}", id);
+    }
+
+    @Override
+    public PhieuMuon findLastInserted() {
+        ResultSet rs = SqlConnection.execute("{call PhieuMuon_FindLastInsert()}", null);
         try {
             while(rs.next()){
                 PhieuMuon pm = new PhieuMuon();
@@ -66,13 +108,8 @@ public class PhieuMuonDAOImp implements IPhieuMuonDAO{
     }
 
     @Override
-    public void add(PhieuMuon pm) {
-        SqlConnection.executeUpdate("INSERT INTO PhieuMuon VALUES (?,?,?,?,?,?,?)", pm.getIdDocGia(), pm.getSoLuongMuon(), pm.getNgayMuon(), pm.getHanTra(), pm.getTongTien(), pm.isTrangThai(), pm.getNgayTao());
-    }
-
-    @Override
-    public void remove(int id) {
-        SqlConnection.executeUpdate("DELETE FROM PhieuMuon WHERE id = ?", id);
+    public void edit(PhieuMuon pm) {
+        SqlConnection.executeUpdate("{call PhieuMuon_Edit(?,?)}",pm.isTrangThai(), pm.getId());
     }
     
 }

@@ -16,6 +16,8 @@ import com.bkap.entities.TacGia;
 import com.bkap.entities.TheLoai;
 import com.bkap.entities.ViTri;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 
 /**
@@ -28,11 +30,23 @@ public class SachUpdate extends javax.swing.JFrame {
     /**
      * Creates new form SachUpdate
      */
-    public SachUpdate() {
+    CallbackSachUpdate cbsu;
+    interface CallbackSachUpdate{
+        public void doUpdateSach(String id, String tenSach, int namXuatBan, int soTrang, float giaMuon, int soLuong, boolean trangThai, 
+                String idTheLoai, String idTacGia, String idNXB, String idViTri);
+    }
 
+    public SachUpdate(CallbackSachUpdate cbsu) {
+        initComponents();
+        this.cbsu = cbsu;
+        loadCbo();
+    }
+    
+    
+    public SachUpdate() {
         sachDAOImp = new SachDAOImp();
         initComponents();
-        loadCbo();
+        
     }
     
     public void loadCbo(){
@@ -92,6 +106,12 @@ public class SachUpdate extends javax.swing.JFrame {
         btnConfirmUpdateBook = new javax.swing.JButton();
         btnCancelUpdateBook = new javax.swing.JButton();
         txtUpdateBookPublishYear = new javax.swing.JTextField();
+        lblIdErr = new javax.swing.JLabel();
+        lblNameErr = new javax.swing.JLabel();
+        lblPublishYearErr = new javax.swing.JLabel();
+        lblPageErr = new javax.swing.JLabel();
+        lblPriceErr = new javax.swing.JLabel();
+        lblQuantityErr = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -118,17 +138,42 @@ public class SachUpdate extends javax.swing.JFrame {
         jLabel7.setText("Trạng Thái:");
 
         txtUpdateBookID.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
+        txtUpdateBookID.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtUpdateBookIDKeyReleased(evt);
+            }
+        });
 
         txtUpdateBookPage.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
+        txtUpdateBookPage.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtUpdateBookPageKeyReleased(evt);
+            }
+        });
 
         txtUpdateBookRentPrice.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
+        txtUpdateBookRentPrice.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtUpdateBookRentPriceKeyReleased(evt);
+            }
+        });
 
         txtUpdateBookNumber.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
+        txtUpdateBookNumber.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtUpdateBookNumberKeyReleased(evt);
+            }
+        });
 
         jLabel8.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
         jLabel8.setText("Tên Sách:");
 
         txtUpdateBookName.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
+        txtUpdateBookName.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtUpdateBookNameKeyReleased(evt);
+            }
+        });
 
         chbUpdateBookStatus.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
         chbUpdateBookStatus.setText("Còn");
@@ -154,6 +199,7 @@ public class SachUpdate extends javax.swing.JFrame {
         cboUpdateBookLocation.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
 
         btnConfirmUpdateBook.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
+        btnConfirmUpdateBook.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-update-18.png"))); // NOI18N
         btnConfirmUpdateBook.setText("Cập nhật");
         btnConfirmUpdateBook.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -162,6 +208,7 @@ public class SachUpdate extends javax.swing.JFrame {
         });
 
         btnCancelUpdateBook.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
+        btnCancelUpdateBook.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-cancel-18.png"))); // NOI18N
         btnCancelUpdateBook.setText("Hủy");
 
         txtUpdateBookPublishYear.setFont(new java.awt.Font("Arial", 0, 15)); // NOI18N
@@ -170,58 +217,96 @@ public class SachUpdate extends javax.swing.JFrame {
                 txtUpdateBookPublishYearActionPerformed(evt);
             }
         });
+        txtUpdateBookPublishYear.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtUpdateBookPublishYearKeyReleased(evt);
+            }
+        });
+
+        lblIdErr.setFont(new java.awt.Font("Arial", 2, 12)); // NOI18N
+        lblIdErr.setForeground(new java.awt.Color(252, 9, 31));
+
+        lblNameErr.setFont(new java.awt.Font("Arial", 2, 12)); // NOI18N
+        lblNameErr.setForeground(new java.awt.Color(252, 9, 31));
+
+        lblPublishYearErr.setFont(new java.awt.Font("Arial", 2, 12)); // NOI18N
+        lblPublishYearErr.setForeground(new java.awt.Color(252, 9, 31));
+
+        lblPageErr.setFont(new java.awt.Font("Arial", 2, 12)); // NOI18N
+        lblPageErr.setForeground(new java.awt.Color(252, 9, 31));
+
+        lblPriceErr.setFont(new java.awt.Font("Arial", 2, 12)); // NOI18N
+        lblPriceErr.setForeground(new java.awt.Color(252, 9, 31));
+
+        lblQuantityErr.setFont(new java.awt.Font("Arial", 2, 12)); // NOI18N
+        lblQuantityErr.setForeground(new java.awt.Color(252, 9, 31));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGap(35, 35, 35)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(31, 31, 31)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtUpdateBookID)
-                            .addComponent(txtUpdateBookName)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtUpdateBookPage)
-                            .addComponent(txtUpdateBookRentPrice)
-                            .addComponent(txtUpdateBookNumber, javax.swing.GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(lblPriceErr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lblPageErr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lblPublishYearErr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lblNameErr, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lblIdErr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(31, 31, 31)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtUpdateBookID)
+                                    .addComponent(txtUpdateBookName)))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(chbUpdateBookStatus)
-                                    .addComponent(txtUpdateBookPublishYear, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 0, Short.MAX_VALUE)))))
-                .addGap(59, 59, 59)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel11)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtUpdateBookPage)
+                                    .addComponent(txtUpdateBookRentPrice)
+                                    .addComponent(txtUpdateBookNumber)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(txtUpdateBookPublishYear, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 187, Short.MAX_VALUE)))))
+                        .addGap(83, 83, 83)
+                        .addComponent(jLabel7)
+                        .addGap(18, 18, 18)
+                        .addComponent(chbUpdateBookStatus)
+                        .addGap(193, 193, 193))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(btnCancelUpdateBook, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
-                        .addComponent(btnConfirmUpdateBook))
-                    .addComponent(cboUpdateBookPublisher, 0, 231, Short.MAX_VALUE)
-                    .addComponent(cboUpdateBookAuthor, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(cboUpdateBookCategory, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(cboUpdateBookLocation, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(45, Short.MAX_VALUE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel11)
+                                    .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.TRAILING))
+                                .addGap(18, 18, 18))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(lblQuantityErr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(170, 170, 170)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(btnCancelUpdateBook, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
+                                .addComponent(btnConfirmUpdateBook))
+                            .addComponent(cboUpdateBookPublisher, 0, 253, Short.MAX_VALUE)
+                            .addComponent(cboUpdateBookAuthor, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(cboUpdateBookCategory, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(cboUpdateBookLocation, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addGap(49, 49, 49))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -234,13 +319,17 @@ public class SachUpdate extends javax.swing.JFrame {
                     .addComponent(txtUpdateBookID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel9)
                     .addComponent(cboUpdateBookCategory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(35, 35, 35)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblIdErr, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(9, 9, 9)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
                     .addComponent(txtUpdateBookName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel10)
                     .addComponent(cboUpdateBookAuthor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(33, 33, 33)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblNameErr, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel3)
@@ -248,27 +337,43 @@ public class SachUpdate extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel11)
                         .addComponent(cboUpdateBookPublisher, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(29, 29, 29)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(txtUpdateBookPage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel12)
-                    .addComponent(cboUpdateBookLocation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(29, 29, 29)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(29, 29, 29)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel12)
+                            .addComponent(cboUpdateBookLocation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(11, 11, 11)
+                        .addComponent(lblPublishYearErr, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(txtUpdateBookPage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblPageErr, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(txtUpdateBookRentPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(36, 36, 36)
+                    .addComponent(txtUpdateBookRentPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7)
+                    .addComponent(chbUpdateBookStatus))
+                .addGap(13, 13, 13)
+                .addComponent(lblPriceErr, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
                     .addComponent(txtUpdateBookNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(36, 36, 36)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(chbUpdateBookStatus)
-                    .addComponent(btnConfirmUpdateBook)
-                    .addComponent(btnCancelUpdateBook))
-                .addContainerGap(112, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(17, 17, 17)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnConfirmUpdateBook)
+                            .addComponent(btnCancelUpdateBook)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lblQuantityErr, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(96, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -277,7 +382,7 @@ public class SachUpdate extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 36, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -293,26 +398,82 @@ public class SachUpdate extends javax.swing.JFrame {
 
     private void btnConfirmUpdateBookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmUpdateBookActionPerformed
         // TODO add your handling code here:
-        Sach sa = new Sach();
-        sa.setId(txtUpdateBookID.getText());
-        sa.setTenSach(txtUpdateBookName.getText());
-        sa.setNamXuatBan(Integer.parseInt(txtUpdateBookPublishYear.getText()));
-        sa.setSoTrang(Integer.parseInt(txtUpdateBookPage.getText()));
-        sa.setGiaMuon(Float.parseFloat(txtUpdateBookRentPrice.getText()));
-        sa.setSoLuong(Integer.parseInt(txtUpdateBookNumber.getText()));
-        sa.setTrangThai(chbUpdateBookStatus.isSelected());
-        sa.setIdTheLoai(((TheLoai)cboUpdateBookCategory.getSelectedItem()).getId());
-        sa.setIdTacGia(((TacGia)cboUpdateBookAuthor.getSelectedItem()).getId());
-        sa.setIdNXB(((NhaXuatBan)cboUpdateBookPublisher.getSelectedItem()).getId());
-        sa.setIdViTri(((ViTri)cboUpdateBookLocation.getSelectedItem()).getId());
-        sachDAOImp.edit(sa);
-        JOptionPane.showMessageDialog(rootPane, "Cập nhật thông tin sách thành công", "Thông báo", 1);
-        
-        SachIF saif = new SachIF();
-        saif.displayBook();
-        
-        dispose();
+            int choice = JOptionPane.showConfirmDialog(rootPane, "Bạn có chắc chắn muốn cập nhật thông tin sách này ?", "Xác Nhận", 0);
+            if (choice == JOptionPane.NO_OPTION) {
+                return;
+            }
+            cbsu.doUpdateSach(txtUpdateBookID.getText(), txtUpdateBookName.getText(), Integer.parseInt(txtUpdateBookPublishYear.getText()),
+                Integer.parseInt(txtUpdateBookPage.getText()), Float.parseFloat(txtUpdateBookRentPrice.getText()),
+                Integer.parseInt(txtUpdateBookNumber.getText()), chbUpdateBookStatus.isSelected(), ((TheLoai)cboUpdateBookCategory.getSelectedItem()).getId(), 
+                ((TacGia)cboUpdateBookAuthor.getSelectedItem()).getId(), ((NhaXuatBan)cboUpdateBookPublisher.getSelectedItem()).getId(), 
+                ((ViTri)cboUpdateBookLocation.getSelectedItem()).getId());
+            dispose();
     }//GEN-LAST:event_btnConfirmUpdateBookActionPerformed
+
+    private void txtUpdateBookIDKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtUpdateBookIDKeyReleased
+        // TODO add your handling code here:
+        String pattern = "^BK[0-9]{3}$";
+        Pattern patt = Pattern.compile(pattern);
+        Matcher match = patt.matcher(txtUpdateBookID.getText());
+        if(!match.matches()){
+            lblIdErr.setText("Mã Sách phải có 5 ký tự và theo định dạng BKxxx (x là số)");
+        }else{
+            lblIdErr.setText("");
+        }
+    }//GEN-LAST:event_txtUpdateBookIDKeyReleased
+
+    private void txtUpdateBookNameKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtUpdateBookNameKeyReleased
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_txtUpdateBookNameKeyReleased
+
+    private void txtUpdateBookPublishYearKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtUpdateBookPublishYearKeyReleased
+        // TODO add your handling code here:
+        String pattern = "^(1[0-9]{3})|(20([01]\\d|2[0-1]))$";
+        Pattern patt = Pattern.compile(pattern);
+        Matcher match = patt.matcher(txtUpdateBookName.getText());
+        if(!match.matches()){
+            lblPublishYearErr.setText("Năm phát hành chỉ là số và không được vượt quá năm hiện tại");
+        }else{
+            lblPublishYearErr.setText("");
+        }
+    }//GEN-LAST:event_txtUpdateBookPublishYearKeyReleased
+
+    private void txtUpdateBookPageKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtUpdateBookPageKeyReleased
+        // TODO add your handling code here:
+        String pattern = "^[0-9]{1,}$";
+        Pattern patt = Pattern.compile(pattern);
+        Matcher match = patt.matcher(txtUpdateBookPage.getText());
+        if(!match.matches()){
+            lblPageErr.setText("Số trang chỉ được nhập số");
+        }else{
+            lblPageErr.setText("");
+        }
+    }//GEN-LAST:event_txtUpdateBookPageKeyReleased
+
+    private void txtUpdateBookRentPriceKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtUpdateBookRentPriceKeyReleased
+        // TODO add your handling code here:
+        String pattern = "^[0-9]{1,}$";
+        Pattern patt = Pattern.compile(pattern);
+        Matcher match = patt.matcher(txtUpdateBookRentPrice.getText());
+        if(!match.matches()){
+            lblPriceErr.setText("Giá tiền chỉ được nhập số");
+        }else{
+            lblPriceErr.setText("");
+        }
+    }//GEN-LAST:event_txtUpdateBookRentPriceKeyReleased
+
+    private void txtUpdateBookNumberKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtUpdateBookNumberKeyReleased
+        // TODO add your handling code here:
+        String pattern = "^[0-9]{1,}$";
+        Pattern patt = Pattern.compile(pattern);
+        Matcher match = patt.matcher(txtUpdateBookNumber.getText());
+        if(!match.matches()){
+            lblQuantityErr.setText("Số lượng sách chỉ được nhập số");
+        }else{
+            lblQuantityErr.setText("");
+        }
+    }//GEN-LAST:event_txtUpdateBookNumberKeyReleased
 
     /**
      * @param args the command line arguments
@@ -370,6 +531,12 @@ public class SachUpdate extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel lblIdErr;
+    private javax.swing.JLabel lblNameErr;
+    private javax.swing.JLabel lblPageErr;
+    private javax.swing.JLabel lblPriceErr;
+    private javax.swing.JLabel lblPublishYearErr;
+    private javax.swing.JLabel lblQuantityErr;
     public javax.swing.JTextField txtUpdateBookID;
     public javax.swing.JTextField txtUpdateBookName;
     public javax.swing.JTextField txtUpdateBookNumber;

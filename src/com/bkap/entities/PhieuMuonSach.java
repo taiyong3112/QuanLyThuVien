@@ -15,6 +15,9 @@ public class PhieuMuonSach {
     private int idPhieuMuon;
     private String idSach;
     private Date ngayTra;
+    private String tenSach;
+    private String butDanh;
+    private String tenNXB;
 
     public PhieuMuonSach() {
     }
@@ -48,6 +51,33 @@ public class PhieuMuonSach {
     public void setNgayTra(Date ngayTra) {
         this.ngayTra = ngayTra;
     }
+
+    public String getTenSach() {
+        return tenSach;
+    }
+
+    public void setTenSach(String tenSach) {
+        this.tenSach = tenSach;
+    }
+
+    public String getButDanh() {
+        return butDanh;
+    }
+
+    public void setButDanh(String butDanh) {
+        this.butDanh = butDanh;
+    }
+
+    public String getTenNXB() {
+        return tenNXB;
+    }
+
+    public void setTenNXB(String tenNXB) {
+        this.tenNXB = tenNXB;
+    }
+
+    
+    
     
     
 }

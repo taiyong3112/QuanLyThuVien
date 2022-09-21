@@ -15,6 +15,8 @@ import java.util.List;
 public interface IPhieuMuonDAO {
     List<PhieuMuon> toList();
     PhieuMuon find(int id);
+    PhieuMuon findLastInserted();
     void add(PhieuMuon pm);
+    void edit(PhieuMuon pm);
     void remove(int id);
 }
